@@ -2,7 +2,7 @@ package config
 
 import (
 	"errors"
-	"finpro-fenlie/entity/dto"
+	"finpro-fenlie/model/dto"
 	"os"
 	"strconv"
 

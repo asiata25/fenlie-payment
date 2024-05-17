@@ -1,7 +1,7 @@
 package config
 
 import (
-	"finpro-fenlie/entity/dto"
+	"finpro-fenlie/model/dto"
 	"fmt"
 
 	"github.com/rs/zerolog"
