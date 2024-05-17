@@ -2,6 +2,7 @@ package app
 
 import (
 	"finpro-fenlie/config"
+	"finpro-fenlie/router"
 	"os"
 	"time"
 
@@ -10,7 +11,16 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
+	"gorm.io/gorm"
 )
+
+func initializeDomainModule(r *gin.Engine, db *gorm.DB) {
+	api := r.Group("/api")
+	v1 := api.Group("/v1")
+
+	router.InitRouter(v1, db)
+
+}
 
 func RunService() {
 	// this is where the service will run
@@ -83,11 +93,8 @@ func RunService() {
 	// set gin middleware for panic hanlder
 	r.Use(gin.Recovery())
 
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "pong",
-		})
-	})
+	// setup global endpoint
+	initializeDomainModule(r, conn)
 
 	version := configData.Version
 	log.Info().Msgf("Service running version: %s", version)
