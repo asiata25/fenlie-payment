@@ -1,6 +1,7 @@
 package app
 
 import (
+	"finpro-fenlie/config"
 	"os"
 	"time"
 
@@ -14,11 +15,19 @@ import (
 func RunService() {
 	// this is where the service will run
 
+	// set project timezone
+	time.Local = time.FixedZone("Asia/Jakarta", 7*60*60)
+
 	// set global logger with zerolog
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stdout}).With().Caller().Logger()
 
-	// set project timezone
-	time.Local = time.FixedZone("Asia/Jakarta", 7*60*60)
+	// setup config file
+	configData, err := config.InitEnv()
+	if err != nil {
+		log.Error().Err(err).Msg("Failed to load config .env")
+		return
+	}
+	log.Info().Object("config", configData).Msg("Success load .env")
 
 	// initialize gin for router framefork
 	r := gin.New()
@@ -51,8 +60,11 @@ func RunService() {
 		})
 	})
 
-	err := r.Run()
+	version := configData.Version
+	log.Info().Msgf("Service running version: %s", version)
+	port := configData.AppConfig.Port
+	err = r.Run(port)
 	if err != nil {
-		log.Panic().Err(err).Msg("Failed to run service")
+		log.Panic().Err(err).Msgf("Failed to run service on port %s", port)
 	}
 }
