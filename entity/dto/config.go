@@ -18,11 +18,12 @@ type (
 		MaxIdle     int
 		MaxConn     int
 		MaxLifetime string
-		LogMode     int
+		LogLevel    int
 	}
 
 	appConfig struct {
-		Port string
+		LogMode int
+		Port    string
 	}
 )
 
@@ -36,7 +37,8 @@ func (c *ConfigData) MarshalZerologObject(e *zerolog.Event) {
 	e.Int("DB MAX IDLE", c.DBConfig.MaxIdle)
 	e.Int("DB MAX CONN", c.DBConfig.MaxConn)
 	e.Str("DB MAX LIFETIME", c.DBConfig.MaxLifetime)
-	e.Int("DB LOG LEVEL", c.DBConfig.LogMode)
+	e.Int("DB LOG LEVEL", c.AppConfig.LogMode)
 	e.Str("APP PORT", c.AppConfig.Port)
+	e.Int("APP LOG MODE", c.AppConfig.LogMode)
 	e.Str("VERSION", c.Version)
 }

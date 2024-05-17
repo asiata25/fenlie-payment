@@ -29,6 +29,35 @@ func RunService() {
 	}
 	log.Info().Object("config", configData).Msg("Success load .env")
 
+	// setup database
+	conn, err := config.ConnectDB(configData, log.Logger)
+	if err != nil {
+		log.Error().Msgf("RunService.ConnectDB.err : %s", err.Error())
+		return
+	}
+
+	duration, err := time.ParseDuration(configData.DBConfig.MaxLifetime)
+	if err != nil {
+		log.Error().Msgf("RunService.Duration.err :%s", err.Error())
+		return
+	}
+
+	sqlDB, err := conn.DB()
+	if err != nil {
+		log.Error().Err(err).Msgf("RunService.sqlDB")
+		return
+	}
+
+	sqlDB.SetConnMaxLifetime(duration)
+	sqlDB.SetMaxIdleConns(configData.DBConfig.MaxIdle)
+	sqlDB.SetMaxOpenConns(configData.DBConfig.MaxConn)
+
+	defer func() {
+		if err := sqlDB.Close(); err != nil {
+			log.Error().Err(err).Msg("Failed to close DB")
+		}
+	}()
+
 	// initialize gin for router framefork
 	r := gin.New()
 
@@ -48,7 +77,7 @@ func RunService() {
 
 	// set gin middleware for logging
 	r.Use(logger.SetLogger(logger.WithLogger(func(ctx *gin.Context, l zerolog.Logger) zerolog.Logger {
-		return l.Output(zerolog.ConsoleWriter{Out: os.Stdout}).With().Logger()
+		return l.Level(zerolog.Level(configData.AppConfig.LogMode)).Output(zerolog.ConsoleWriter{Out: os.Stdout}).With().Logger()
 	})))
 
 	// set gin middleware for panic hanlder

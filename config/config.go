@@ -33,15 +33,21 @@ func InitEnv() (*dto.ConfigData, error) {
 	dbMaxIdle := os.Getenv("MAX_IDLE")
 	dbMaxConn := os.Getenv("MAX_CONN")
 	dbMaxLifetime := os.Getenv("MAX_LIFE_TIME")
+	dbLogLevel := os.Getenv("DB_LOG_LEVEL")
 	logMode := os.Getenv("LOG_MODE")
 
 	if dbHost == "" || dbPort == "" || dbUser == "" || dbPass == "" || dbName == "" ||
-		dbMaxIdle == "" || dbMaxConn == "" || dbMaxLifetime == "" || logMode == "" {
+		dbMaxIdle == "" || dbMaxConn == "" || dbMaxLifetime == "" || logMode == "" || dbLogLevel == "" {
 		return &configData, errors.New("DB Config is not set")
 	}
 
 	var err error
 	configData.DBConfig.MaxConn, err = strconv.Atoi(dbMaxConn)
+	if err != nil {
+		return &configData, err
+	}
+
+	configData.DBConfig.LogLevel, err = strconv.Atoi(dbLogLevel)
 	if err != nil {
 		return &configData, err
 	}
@@ -62,7 +68,7 @@ func InitEnv() (*dto.ConfigData, error) {
 	configData.DBConfig.Name = dbName
 	configData.DBConfig.MaxLifetime = dbMaxLifetime
 
-	configData.DBConfig.LogMode, err = strconv.Atoi(logMode)
+	configData.AppConfig.LogMode, err = strconv.Atoi(logMode)
 	if err != nil {
 		return &configData, err
 	}
