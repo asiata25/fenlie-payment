@@ -13,8 +13,15 @@ func InitEnv() (*dto.ConfigData, error) {
 	var configData dto.ConfigData
 
 	// load .env file from root
-	if err := godotenv.Load(); err != nil {
-		return &configData, err
+	mode := os.Getenv("MODE")
+	if mode != "" {
+		if err := godotenv.Load(mode + ".env"); err != nil {
+			return &configData, err
+		}
+	} else {
+		if err := godotenv.Load(); err != nil {
+			return &configData, err
+		}
 	}
 
 	if version := os.Getenv("VERSION"); version != "" {

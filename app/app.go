@@ -37,7 +37,7 @@ func RunService() {
 		log.Error().Err(err).Msg("Failed to load config .env")
 		return
 	}
-	log.Info().Object("config", configData).Msg("Success load .env")
+	log.Info().Object("config", configData).Msg("Success load " + os.Getenv("MODE") + ".env")
 
 	// setup database
 	conn, err := config.ConnectDB(configData, log.Logger)
