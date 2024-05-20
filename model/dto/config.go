@@ -4,9 +4,11 @@ import "github.com/rs/zerolog"
 
 type (
 	ConfigData struct {
-		DBConfig  dbConfig
-		AppConfig appConfig
-		Version   string
+		DBConfig     dbConfig
+		AppConfig    appConfig
+		Version      string
+		ClientID     string
+		ClientSecret string
 	}
 
 	dbConfig struct {
@@ -18,6 +20,7 @@ type (
 		MaxIdle     int
 		MaxConn     int
 		MaxLifetime string
+		MaxIdletime string
 		LogLevel    int
 	}
 
@@ -41,4 +44,6 @@ func (c *ConfigData) MarshalZerologObject(e *zerolog.Event) {
 	e.Str("APP PORT", c.AppConfig.Port)
 	e.Int("APP LOG MODE", c.AppConfig.LogMode)
 	e.Str("VERSION", c.Version)
+	e.Str("CLIENT ID", c.ClientID)
+	e.Str("CLIENT SECRET", c.ClientSecret)
 }

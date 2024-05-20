@@ -46,9 +46,14 @@ func RunService() {
 		return
 	}
 
-	duration, err := time.ParseDuration(configData.DBConfig.MaxLifetime)
+	durationConn, err := time.ParseDuration(configData.DBConfig.MaxLifetime)
 	if err != nil {
-		log.Error().Msgf("RunService.Duration.err :%s", err.Error())
+		log.Error().Msgf("RunService.ConnDuration.err :%s", err.Error())
+		return
+	}
+	durationIdle, err := time.ParseDuration(configData.DBConfig.MaxIdletime)
+	if err != nil {
+		log.Error().Msgf("RunService.IdleDuration.err :%s", err.Error())
 		return
 	}
 
@@ -58,8 +63,9 @@ func RunService() {
 		return
 	}
 
-	sqlDB.SetConnMaxLifetime(duration)
+	sqlDB.SetConnMaxLifetime(durationConn)
 	sqlDB.SetMaxIdleConns(configData.DBConfig.MaxIdle)
+	sqlDB.SetConnMaxIdleTime(durationIdle)
 	sqlDB.SetMaxOpenConns(configData.DBConfig.MaxConn)
 
 	defer func() {
