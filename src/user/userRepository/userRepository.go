@@ -153,8 +153,8 @@ func (repo *userRepository) EditUser(c *gin.Context, id string, userUpdates map[
 	return nil
 }
 
-func (repo *userRepository) RemoveUser(ctx *gin.Context, id string) error {
-	userLogged, err := middleware.GetUserInfo(ctx)
+func (repo *userRepository) RemoveUser(c *gin.Context, id string) error {
+	userLogged, err := middleware.GetUserInfo(c)
 	if err != nil {
 		return errors.New("unauthorized")
 	}
@@ -232,5 +232,6 @@ func (repo *userRepository) CheckUserEmailPassword(user userDto.User) (bool, boo
 
 func comparePassword(password, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+
 	return err == nil
 }
