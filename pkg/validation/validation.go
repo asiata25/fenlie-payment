@@ -2,14 +2,13 @@ package validation
 
 import (
 	"errors"
-	jsonDTO "finpro-fenlie/model/dto/json"
-	"regexp"
 	"strings"
 
-	"github.com/stoewer/go-strcase"
+	jsonDTO "finpro-fenlie/model/dto/json"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/rs/zerolog/log"
+	"github.com/stoewer/go-strcase"
 )
 
 func GetValidationError(err error) []jsonDTO.ValidationField {
@@ -47,6 +46,8 @@ func formatMessage(err validator.FieldError) string {
 		message = "maximum value is exceed"
 	case "isPassword":
 		message = "The password must be a minimum of 8 characters, contain uppercase letters, lowercase letters and special characters"
+	case "oneof":
+		message = "value not accepted"
 	}
 
 	return message
@@ -130,3 +131,4 @@ func isValidEmailFormat(email string) bool {
 func isEmailUsed(email, dbEmail string) bool {
 	return email == dbEmail
 }
+ fb16f33 (feat: category endpoint for get, get by id, create, delete, and update)
