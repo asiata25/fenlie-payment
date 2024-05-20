@@ -40,6 +40,7 @@ func InitEnv() (*dto.ConfigData, error) {
 	dbMaxIdle := os.Getenv("MAX_IDLE")
 	dbMaxConn := os.Getenv("MAX_CONN")
 	dbMaxLifetime := os.Getenv("MAX_LIFE_TIME")
+	dbMaxIdletime := os.Getenv("MAX_IDLE_TIME")
 	dbLogLevel := os.Getenv("DB_LOG_LEVEL")
 	logMode := os.Getenv("LOG_MODE")
 
@@ -74,6 +75,7 @@ func InitEnv() (*dto.ConfigData, error) {
 	configData.DBConfig.Pass = dbPass
 	configData.DBConfig.Name = dbName
 	configData.DBConfig.MaxLifetime = dbMaxLifetime
+	configData.DBConfig.MaxIdletime = dbMaxIdletime
 
 	configData.AppConfig.LogMode, err = strconv.Atoi(logMode)
 	if err != nil {
