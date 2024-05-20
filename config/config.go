@@ -43,10 +43,12 @@ func InitEnv() (*dto.ConfigData, error) {
 	dbMaxIdletime := os.Getenv("MAX_IDLE_TIME")
 	dbLogLevel := os.Getenv("DB_LOG_LEVEL")
 	logMode := os.Getenv("LOG_MODE")
+	clientId := os.Getenv("CLIENT_ID")
+	clientSecret := os.Getenv("CLIENT_SECRET")
 
 	if dbHost == "" || dbPort == "" || dbUser == "" || dbPass == "" || dbName == "" ||
-		dbMaxIdle == "" || dbMaxConn == "" || dbMaxLifetime == "" || logMode == "" || dbLogLevel == "" {
-		return &configData, errors.New("DB Config is not set")
+		dbMaxIdle == "" || dbMaxConn == "" || dbMaxLifetime == "" || logMode == "" || dbLogLevel == "" || clientId == "" || clientSecret == "" {
+		return &configData, errors.New("DB Config is properly set")
 	}
 
 	var err error
@@ -81,6 +83,9 @@ func InitEnv() (*dto.ConfigData, error) {
 	if err != nil {
 		return &configData, err
 	}
+
+	configData.ClientID = clientId
+	configData.ClientSecret = clientSecret
 
 	return &configData, nil
 }
