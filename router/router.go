@@ -1,6 +1,9 @@
 package router
 
 import (
+	"finpro-fenlie/src/category/categoryDelivery"
+	"finpro-fenlie/src/category/categoryRepository"
+	"finpro-fenlie/src/category/categoryUseCase"
 	companyDelivery "finpro-fenlie/src/company/company_delivery"
 	companyRepository "finpro-fenlie/src/company/company_repository"
 	companyUseCase "finpro-fenlie/src/company/company_use_case"
@@ -21,6 +24,12 @@ func InitRouter(v1Group *gin.RouterGroup, db *gorm.DB) {
 
 	// User Route
 	userRepo := userRepository.NewUserRepository(db)
-	userUseCase := userUsecase.NewUserUsecase(userRepo)
-	userDelivery.NewUserDelivery(v1Group, userUseCase)
+	userUC := userUsecase.NewUserUsecase(userRepo)
+	userDelivery.NewUserDelivery(v1Group, userUC)
+
+	// Category Route
+	categoryRepo := categoryRepository.NewCategoryRepository(db)
+	categoryUseCase := categoryUseCase.NewCategoryUseCase(categoryRepo)
+	categoryDelivery.NewCategoryDelivery(v1Group, categoryUseCase)
+
 }
