@@ -2,7 +2,7 @@ package userRepository
 
 import (
 	"errors"
-	"finpro-fenlie/model/dto/middlewareDto"
+	"finpro-fenlie/model/dto"
 	"finpro-fenlie/model/dto/userDto"
 	"finpro-fenlie/pkg/middleware"
 	"finpro-fenlie/pkg/validation"
@@ -21,23 +21,6 @@ type userRepository struct {
 
 func NewUserRepository(db *gorm.DB) user.UserRepository {
 	return &userRepository{db}
-}
-
-func (repo *userRepository) RetrieveLoginUser(ctx *gin.Context, req middlewareDto.LoginRequest, user userDto.User) (string, error) {
-	// Validate password
-	if !comparePassword(req.Password, user.Password) {
-		return "", errors.New("invalid password")
-	}
-
-	companyID := user.CompanyID.String()
-
-	// Generate JWT token
-	token, err := middleware.GenerateTokenJwt(req.Email, user.Role, companyID, 60)
-	if err != nil {
-		return "", err
-	}
-
-	return token, nil
 }
 
 func (repo *userRepository) InsertUser(c *gin.Context, user userDto.User, checkEmail, checkPass bool) error {
@@ -230,7 +213,16 @@ func (repo *userRepository) CheckUserEmailPassword(user userDto.User) (bool, boo
 	return true, true, nil
 }
 
-func comparePassword(password, hash string) bool {
+func (repo *userRepository) RetrieveCompanyByID(c *gin.Context, id string) (dto.CompanyResponse, error) {
+	var company dto.CompanyResponse
+	if err := repo.db.Select("id", "name").Where("id = ?", id).First(&company).Error; err != nil {
+		return company, err
+	}
+
+	return company, nil
+}
+
+func (repo *userRepository) ComparePassword(password, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 
 	return err == nil

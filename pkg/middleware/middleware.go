@@ -13,12 +13,12 @@ import (
 )
 
 func BasicAuth(c *gin.Context) {
-	user, password, ok := c.Request.BasicAuth()
+	clientID, clientSecret, ok := c.Request.BasicAuth()
 	if !ok {
 		jsonDTO.NewResponseAuth(c, "Invalid Token")
 		return
 	}
-	if user != os.Getenv("CLIENT_ID") || password != os.Getenv("CLIENT_SECRET") {
+	if clientID != os.Getenv("CLIENT_ID") || clientSecret != os.Getenv("CLIENT_SECRET") {
 		jsonDTO.NewResponseAuth(c, "Unauthorized")
 		return
 	}

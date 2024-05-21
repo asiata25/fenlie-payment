@@ -1,6 +1,7 @@
 package user
 
 import (
+	"finpro-fenlie/model/dto"
 	"finpro-fenlie/model/dto/middlewareDto"
 	"finpro-fenlie/model/dto/userDto"
 
@@ -8,7 +9,6 @@ import (
 )
 
 type UserRepository interface {
-	RetrieveLoginUser(*gin.Context, middlewareDto.LoginRequest, userDto.User) (string, error)
 	InsertUser(*gin.Context, userDto.User, bool, bool) error
 	RetrieveAllUser(*gin.Context, int, int, int64, string, string) (userDto.GetResponse, error)
 	RetrieveUserByID(*gin.Context, string) (userDto.User, error)
@@ -17,6 +17,8 @@ type UserRepository interface {
 	CheckUserEmailPassword(userDto.User) (bool, bool, error)
 	EditUser(*gin.Context, string, map[string]interface{}) error
 	RemoveUser(*gin.Context, string) error
+	RetrieveCompanyByID(*gin.Context, string) (dto.CompanyResponse, error)
+	ComparePassword(string, string) bool
 }
 
 type UserUsecase interface {

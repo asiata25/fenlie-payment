@@ -15,7 +15,8 @@ import (
 )
 
 func initializeDomainModule(r *gin.Engine, db *gorm.DB) {
-	api := r.Group("/api")
+	fenlie := r.Group("/fenlie")
+	api := fenlie.Group("/api")
 	v1 := api.Group("/v1")
 
 	router.InitRouter(v1, db)

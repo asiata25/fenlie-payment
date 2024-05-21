@@ -1,8 +1,10 @@
 package userUsecase
 
 import (
+	"errors"
 	"finpro-fenlie/model/dto/middlewareDto"
 	"finpro-fenlie/model/dto/userDto"
+	"finpro-fenlie/pkg/middleware"
 	"finpro-fenlie/src/user"
 
 	"github.com/gin-gonic/gin"
@@ -23,12 +25,19 @@ func (usecase *userUC) Login(c *gin.Context, req middlewareDto.LoginRequest) (st
 		return "err", err
 	}
 
-	users, err := usecase.userRepo.RetrieveLoginUser(c, req, user)
-	if err != nil {
-		return "err", err
+	match := usecase.userRepo.ComparePassword(req.Password, user.Password)
+	if !match {
+		return "", errors.New("invalid password")
 	}
 
-	return users, nil
+	companyID := user.CompanyID.String()
+
+	token, err := middleware.GenerateTokenJwt(req.Email, user.Role, companyID, 60)
+	if err != nil {
+		return "", err
+	}
+
+	return token, nil
 }
 
 // Implement CreateUser
