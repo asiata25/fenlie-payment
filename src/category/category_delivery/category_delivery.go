@@ -20,20 +20,20 @@ func (cd *categoryDelivery) Create(ctx *gin.Context) {
 	if err := ctx.ShouldBindJSON(&request); err != nil {
 		validationErr := validation.GetValidationError(err)
 		if len(validationErr) > 0 {
-			jsonDTO.NewResponseBadRequest(ctx, validationErr, "bad request", "01", "01")
+			jsonDTO.NewResponseBadRequest(ctx, validationErr, "bad request")
 			return
 		}
-		jsonDTO.NewResponseError(ctx, "no request body found", "01", "02")
+		jsonDTO.NewResponseError(ctx, "no request body found")
 		return
 	}
 
 	err := cd.useCase.CreateLoan(&request)
 	if err != nil {
-		jsonDTO.NewResponseError(ctx, err.Error(), "01", "01")
+		jsonDTO.NewResponseError(ctx, err.Error())
 		return
 	}
 
-	jsonDTO.NewResponseSuccess(ctx, request, "created successfully", "01", "01")
+	jsonDTO.NewResponseSuccess(ctx, request, "created successfully")
 }
 
 func (cd *categoryDelivery) GetAll(ctx *gin.Context) {
@@ -42,28 +42,28 @@ func (cd *categoryDelivery) GetAll(ctx *gin.Context) {
 
 	loans, total, err := cd.useCase.GetAllLoans(page, size)
 	if err != nil {
-		jsonDTO.NewResponseError(ctx, err.Error(), "01", "01")
+		jsonDTO.NewResponseError(ctx, err.Error())
 		return
 	}
 
 	pageInt, err := strconv.Atoi(page)
 	if err != nil {
-		jsonDTO.NewResponseError(ctx, err.Error(), "01", "01")
+		jsonDTO.NewResponseError(ctx, err.Error())
 		return
 	}
 
-	jsonDTO.NewResponseUserPaging(ctx, loans, pageInt, total, "01", "01")
+	jsonDTO.NewResponseWithPaging(ctx, loans, pageInt, total)
 }
 
 func (cd *categoryDelivery) GetByID(ctx *gin.Context) {
 	ID := ctx.Param("id")
 	loans, err := cd.useCase.GetLoanById(ID)
 	if err != nil {
-		jsonDTO.NewResponseError(ctx, err.Error(), "01", "01")
+		jsonDTO.NewResponseError(ctx, err.Error())
 		return
 	}
 
-	jsonDTO.NewResponseSuccess(ctx, loans, "ok", "01", "01")
+	jsonDTO.NewResponseSuccess(ctx, loans, "ok")
 }
 
 func (cd *categoryDelivery) Update(ctx *gin.Context) {
@@ -74,20 +74,20 @@ func (cd *categoryDelivery) Update(ctx *gin.Context) {
 	if err := ctx.ShouldBindJSON(&request); err != nil {
 		validationErr := validation.GetValidationError(err)
 		if len(validationErr) > 0 {
-			jsonDTO.NewResponseBadRequest(ctx, validationErr, "bad request", "01", "01")
+			jsonDTO.NewResponseBadRequest(ctx, validationErr, "bad request")
 			return
 		}
-		jsonDTO.NewResponseError(ctx, "no request body found", "01", "02")
+		jsonDTO.NewResponseError(ctx, "no request body found")
 		return
 	}
 
 	err := cd.useCase.UpdateLoan(&request)
 	if err != nil {
-		jsonDTO.NewResponseError(ctx, err.Error(), "01", "01")
+		jsonDTO.NewResponseError(ctx, err.Error())
 		return
 	}
 
-	jsonDTO.NewResponseSuccess(ctx, nil, "updated successfully", "01", "01")
+	jsonDTO.NewResponseSuccess(ctx, nil, "updated successfully")
 }
 
 func (cd *categoryDelivery) Delete(ctx *gin.Context) {
@@ -95,11 +95,11 @@ func (cd *categoryDelivery) Delete(ctx *gin.Context) {
 
 	err := cd.useCase.DeleteLoan(ID)
 	if err != nil {
-		jsonDTO.NewResponseError(ctx, err.Error(), "01", "01")
+		jsonDTO.NewResponseError(ctx, err.Error())
 		return
 	}
 
-	jsonDTO.NewResponseSuccess(ctx, nil, "delete success", "01", "01")
+	jsonDTO.NewResponseSuccess(ctx, nil, "delete success")
 }
 
 func NewCategoryDelivery(v1Group *gin.RouterGroup, useCase category.CategoryUseCase) {

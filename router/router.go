@@ -1,9 +1,9 @@
 package router
 
 import (
-	"finpro-fenlie/src/category/categoryDelivery"
-	"finpro-fenlie/src/category/categoryRepository"
-	"finpro-fenlie/src/category/categoryUseCase"
+	categoryDelivery "finpro-fenlie/src/category/category_delivery"
+	categoryRepository "finpro-fenlie/src/category/category_repository"
+	categoryUseCase "finpro-fenlie/src/category/category_use_case"
 	companyDelivery "finpro-fenlie/src/company/company_delivery"
 	companyRepository "finpro-fenlie/src/company/company_repository"
 	companyUseCase "finpro-fenlie/src/company/company_use_case"

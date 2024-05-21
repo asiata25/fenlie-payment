@@ -1,4 +1,4 @@
-package jsonDTO
+package json
 
 import (
 	"net/http"
@@ -18,24 +18,6 @@ type (
 		Code    string `json:"responseCode"`
 		Message string `json:"responseMessage"`
 		Error   string `json:"error,omitempty"`
-	}
-
-	ValidationField struct {
-		FieldName string `json:"field"`
-		Message   string `json:"message"`
-	}
-
-	// JSONResponse - struct for JSON response bad request
-	jsonBadRequestResponse struct {
-		Code             string            `json:"responseCode"`
-		Message          string            `json:"responseMessage"`
-		ErrorDescription []ValidationField `json:"error_description,omitempty"`
-	}
-
-	// JSONResponse - struct for JSON response auth
-	Response struct {
-		Code    string `json:"responseCode"`
-		Message string `json:"responseMessage"`
 	}
 
 	paginationResponse struct {
@@ -69,9 +51,9 @@ func NewResponseSuccess(c *gin.Context, result interface{}, message string) {
 	})
 }
 
-func NewResponseUserPaging(c *gin.Context, result interface{}, page int, total int, serviceCode, responseCode string) {
+func NewResponseWithPaging(c *gin.Context, result interface{}, page int, total int) {
 	c.JSON(http.StatusOK, paginationResponse{
-		Code: "200" + serviceCode + responseCode,
+		Code: "200",
 		Data: result,
 		Paging: pageData{
 			Page:      page,
@@ -94,23 +76,6 @@ func NewResponseError(c *gin.Context, err string) {
 	c.JSON(http.StatusInternalServerError, jsonErrorResponse{
 		Code:    "500",
 		Message: "internal server error",
-		Error:   err,
-	})
-}
-
-func NewResponseBadRequest(c *gin.Context, validationField []ValidationField, message, serviceCode, errorCode string) {
-	c.JSON(http.StatusBadRequest, jsonBadRequestResponse{
-		Code:             "400" + serviceCode + errorCode,
-		Message:          message,
-		ErrorDescription: validationField,
-	})
-}
-
-func NewResponseError(c *gin.Context, err, serviceCode, errorCode string) {
-	log.Error().Msg(err)
-	c.JSON(http.StatusInternalServerError, jsonErrorResponse{
-		Code:    "500" + serviceCode + errorCode,
-		Message: "Internal Server Error",
 		Error:   err,
 	})
 }
