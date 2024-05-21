@@ -3,7 +3,6 @@ package app
 import (
 	"finpro-fenlie/config"
 	"finpro-fenlie/router"
-	"flag"
 	"os"
 	"time"
 
@@ -104,9 +103,10 @@ func RunService() {
 	initializeDomainModule(r, conn)
 
 	version := configData.Version
-	log.Info().Msgf("Service Running version %s", version)
-	addr := flag.String("port", os.Getenv("PORT"), "Addres to listen and serve")
-	if err := r.Run(*addr); err != nil {
-		log.Error().Msg(err.Error())
+	log.Info().Msgf("Service running version: %s", version)
+	port := configData.AppConfig.Port
+	err = r.Run(port)
+	if err != nil {
+		log.Panic().Err(err).Msgf("Failed to run service on port %s", port)
 	}
 }
