@@ -1,7 +1,6 @@
 package userUsecase
 
 import (
-	"finpro-fenlie/model/dto/auth"
 	userDTO "finpro-fenlie/model/dto/user"
 	"finpro-fenlie/src/user"
 
@@ -17,7 +16,7 @@ func NewUserUsecase(userRepo user.UserRepository) user.UserUsecase {
 }
 
 // Implement Login
-func (usecase *userUC) Login(c *gin.Context, req auth.LoginRequest) (string, error) {
+func (usecase *userUC) Login(c *gin.Context, req userDTO.LoginRequest) (string, error) {
 	user, err := usecase.userRepo.RetrieveUserByEmail(req.Email)
 	if err != nil {
 		return "err", err

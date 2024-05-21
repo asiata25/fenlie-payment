@@ -4,9 +4,9 @@ import (
 	companyDelivery "finpro-fenlie/src/company/company_delivery"
 	companyRepository "finpro-fenlie/src/company/company_repository"
 	companyUseCase "finpro-fenlie/src/company/company_use_case"
-	"finpro-fenlie/src/user/userDelivery"
-	"finpro-fenlie/src/user/userRepository"
-	"finpro-fenlie/src/user/userUsecase"
+	userDelivery "finpro-fenlie/src/user/user_delivery"
+	userRepository "finpro-fenlie/src/user/user_repository"
+	userUsecase "finpro-fenlie/src/user/user_use_case"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"

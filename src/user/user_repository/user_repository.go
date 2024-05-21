@@ -2,7 +2,7 @@ package userRepository
 
 import (
 	"errors"
-	"finpro-fenlie/model/dto/auth"
+	"finpro-fenlie/helper"
 	userDTO "finpro-fenlie/model/dto/user"
 	"finpro-fenlie/pkg/middleware"
 	"finpro-fenlie/pkg/validation"
@@ -23,7 +23,7 @@ func NewUserRepository(db *gorm.DB) user.UserRepository {
 	return &userRepository{db}
 }
 
-func (repo *userRepository) RetrieveLoginUser(ctx *gin.Context, req auth.LoginRequest, user userDTO.User) (string, error) {
+func (repo *userRepository) RetrieveLoginUser(ctx *gin.Context, req userDTO.LoginRequest, user userDTO.User) (string, error) {
 	// Validate password
 	if !comparePassword(req.Password, user.Password) {
 		return "", errors.New("invalid password")
@@ -32,7 +32,7 @@ func (repo *userRepository) RetrieveLoginUser(ctx *gin.Context, req auth.LoginRe
 	companyID := user.CompanyID.String()
 
 	// Generate JWT token
-	token, err := middleware.GenerateTokenJwt(req.Email, user.Role, companyID, 60)
+	token, err := helper.GenerateTokenJwt(req.Email, user.Role, companyID, 60)
 	if err != nil {
 		return "", err
 	}

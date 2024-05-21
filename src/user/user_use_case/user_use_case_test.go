@@ -2,7 +2,6 @@ package userUsecase
 
 import (
 	"errors"
-	"finpro-fenlie/model/dto/auth"
 	userDTO "finpro-fenlie/model/dto/user"
 	"testing"
 
@@ -16,7 +15,7 @@ type userUCMock struct {
 	mock.Mock
 }
 
-func (m *userUCMock) Login(c *gin.Context, req auth.LoginRequest) (string, error) {
+func (m *userUCMock) Login(c *gin.Context, req userDTO.LoginRequest) (string, error) {
 	args := m.Called(c, req)
 	return args.String(0), args.Error(1)
 }
@@ -50,7 +49,7 @@ func (m *userUCMock) DeleteUser(c *gin.Context, id string) error {
 func TestLogin_Success(t *testing.T) {
 	c, _ := gin.CreateTestContext(nil)
 	mockUserUC := new(userUCMock)
-	req := auth.LoginRequest{
+	req := userDTO.LoginRequest{
 		Email:    "user@gmail.com",
 		Password: "password",
 	}
@@ -65,7 +64,7 @@ func TestLogin_Success(t *testing.T) {
 func TestLogin_Failed(t *testing.T) {
 	c, _ := gin.CreateTestContext(nil)
 	mockUserUC := new(userUCMock)
-	req := auth.LoginRequest{
+	req := userDTO.LoginRequest{
 		Email:    "user@mail.com",
 		Password: "password",
 	}

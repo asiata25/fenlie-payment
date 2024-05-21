@@ -22,4 +22,15 @@ type (
 		Pagination Paging `json:"paging"`
 		TotalData  int64  `json:"totalData"`
 	}
+
+	LoginRequest struct {
+		Email    string `json:"email" binding:"required"`
+		Password string `json:"password" binding:"required"`
+	}
+
+	UserInfo struct {
+		Email     string `json:"email"`
+		CompanyID string `json:"company_id"`
+		Roles     string `json:"roles,omitempty"`
+	}
 )

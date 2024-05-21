@@ -2,7 +2,6 @@ package userRepository
 
 import (
 	"errors"
-	"finpro-fenlie/model/dto/auth"
 	userDTO "finpro-fenlie/model/dto/user"
 	"testing"
 
@@ -16,7 +15,7 @@ type userRepoMock struct {
 	mock.Mock
 }
 
-func (m *userRepoMock) RetrieveLoginUser(ctx *gin.Context, req auth.LoginRequest, user userDTO.User) (string, error) {
+func (m *userRepoMock) RetrieveLoginUser(ctx *gin.Context, req userDTO.LoginRequest, user userDTO.User) (string, error) {
 	args := m.Called(ctx, req, user)
 	return args.String(0), args.Error(1)
 }
@@ -65,7 +64,7 @@ func (m *userRepoMock) CheckUserEmailPassword(user userDTO.User) (bool, bool, er
 func TestRetrieveLoginUser_Success(t *testing.T) {
 	c, _ := gin.CreateTestContext(nil)
 	userRepoMock := new(userRepoMock)
-	req := auth.LoginRequest{Email: "user@gmail.com", Password: "password"}
+	req := userDTO.LoginRequest{Email: "user@gmail.com", Password: "password"}
 	user := userDTO.User{Email: "user@gmail.com", Password: "password"}
 	userRepoMock.On("RetrieveLoginUser", c, req, user).Return("token", nil)
 	got, err := userRepoMock.RetrieveLoginUser(c, req, user)
@@ -77,7 +76,7 @@ func TestRetrieveLoginUser_Success(t *testing.T) {
 func TestRetrieveLoginUser_Fail(t *testing.T) {
 	c, _ := gin.CreateTestContext(nil)
 	userRepoMock := new(userRepoMock)
-	req := auth.LoginRequest{Email: "usar@gmail.com", Password: "password"}
+	req := userDTO.LoginRequest{Email: "usar@gmail.com", Password: "password"}
 	user := userDTO.User{Email: "user@gmail.com", Password: "password"}
 	expectedError := errors.New("invalid password")
 
