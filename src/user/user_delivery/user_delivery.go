@@ -2,8 +2,7 @@ package userDelivery
 
 import (
 	jsonDTO "finpro-fenlie/model/dto/json"
-	"finpro-fenlie/model/dto/middlewareDto"
-	"finpro-fenlie/model/dto/userDto"
+	userDTO "finpro-fenlie/model/dto/user"
 	"finpro-fenlie/pkg/middleware"
 	"finpro-fenlie/src/user"
 	"strconv"
@@ -19,7 +18,7 @@ func NewUserDelivery(v1Group *gin.RouterGroup, userUC user.UserUsecase) {
 	handler := UserDelivery{
 		userUC: userUC}
 	users := v1Group.Group("/users")
-	users.Use(middleware.JWTAuth(), middleware.AdminOnly())
+	users.Use(middleware.JWTAuth("ADMIN"))
 	{
 		users.POST("", handler.createUser)
 		users.GET("", handler.getUser)
@@ -36,7 +35,7 @@ func NewUserDelivery(v1Group *gin.RouterGroup, userUC user.UserUsecase) {
 }
 
 func (u *UserDelivery) login(ctx *gin.Context) {
-	var req middlewareDto.LoginRequest
+	var req userDTO.LoginRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		jsonDTO.NewResponseError(ctx, err.Error())
 		return
@@ -48,11 +47,11 @@ func (u *UserDelivery) login(ctx *gin.Context) {
 		return
 	}
 
-	jsonDTO.NewResponseSuccessToken(ctx, token, "success")
+	jsonDTO.NewResponseSuccess(ctx, gin.H{"token": token}, "success")
 }
 
 func (u *UserDelivery) createUser(ctx *gin.Context) {
-	var user userDto.User
+	var user userDTO.User
 	if err := ctx.ShouldBindJSON(&user); err != nil {
 		jsonDTO.NewResponseError(ctx, err.Error())
 		return

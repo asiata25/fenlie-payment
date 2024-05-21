@@ -2,8 +2,7 @@ package userRepository
 
 import (
 	"errors"
-	"finpro-fenlie/model/dto/middlewareDto"
-	"finpro-fenlie/model/dto/userDto"
+	userDTO "finpro-fenlie/model/dto/user"
 	"testing"
 
 	"github.com/gin-gonic/gin"
@@ -16,24 +15,24 @@ type userRepoMock struct {
 	mock.Mock
 }
 
-func (m *userRepoMock) RetrieveLoginUser(ctx *gin.Context, req middlewareDto.LoginRequest, user userDto.User) (string, error) {
+func (m *userRepoMock) RetrieveLoginUser(ctx *gin.Context, req userDTO.LoginRequest, user userDTO.User) (string, error) {
 	args := m.Called(ctx, req, user)
 	return args.String(0), args.Error(1)
 }
 
-func (m *userRepoMock) InsertUser(c *gin.Context, user userDto.User, checkEmail, checkPass bool) error {
+func (m *userRepoMock) InsertUser(c *gin.Context, user userDTO.User, checkEmail, checkPass bool) error {
 	args := m.Called(c, user, checkEmail, checkPass)
 	return args.Error(0)
 }
 
-func (m *userRepoMock) RetrieveAllUser(c *gin.Context, page, size int, totalData int64, email, name string) (userDto.GetResponse, error) {
+func (m *userRepoMock) RetrieveAllUser(c *gin.Context, page, size int, totalData int64, email, name string) (userDTO.GetResponse, error) {
 	args := m.Called(c, page, size, totalData, email, name)
-	return args.Get(0).(userDto.GetResponse), args.Error(1)
+	return args.Get(0).(userDTO.GetResponse), args.Error(1)
 }
 
-func (m *userRepoMock) RetrieveUserByID(c *gin.Context, id string) (userDto.User, error) {
+func (m *userRepoMock) RetrieveUserByID(c *gin.Context, id string) (userDTO.User, error) {
 	args := m.Called(c, id)
-	return args.Get(0).(userDto.User), args.Error(1)
+	return args.Get(0).(userDTO.User), args.Error(1)
 }
 
 func (m *userRepoMock) EditUser(c *gin.Context, id string, userUpdates map[string]interface{}) error {
@@ -46,9 +45,9 @@ func (m *userRepoMock) RemoveUser(c *gin.Context, id string) error {
 	return args.Error(0)
 }
 
-func (m *userRepoMock) RetrieveUserByEmail(email string) (userDto.User, error) {
+func (m *userRepoMock) RetrieveUserByEmail(email string) (userDTO.User, error) {
 	args := m.Called(email)
-	return args.Get(0).(userDto.User), args.Error(1)
+	return args.Get(0).(userDTO.User), args.Error(1)
 }
 
 func (m *userRepoMock) CountUsers(c *gin.Context, email, name string) (int64, error) {
@@ -56,7 +55,7 @@ func (m *userRepoMock) CountUsers(c *gin.Context, email, name string) (int64, er
 	return args.Get(0).(int64), args.Error(1)
 }
 
-func (m *userRepoMock) CheckUserEmailPassword(user userDto.User) (bool, bool, error) {
+func (m *userRepoMock) CheckUserEmailPassword(user userDTO.User) (bool, bool, error) {
 	args := m.Called(user)
 	return args.Bool(0), args.Bool(1), args.Error(2)
 }
@@ -65,8 +64,8 @@ func (m *userRepoMock) CheckUserEmailPassword(user userDto.User) (bool, bool, er
 func TestRetrieveLoginUser_Success(t *testing.T) {
 	c, _ := gin.CreateTestContext(nil)
 	userRepoMock := new(userRepoMock)
-	req := middlewareDto.LoginRequest{Email: "user@gmail.com", Password: "password"}
-	user := userDto.User{Email: "user@gmail.com", Password: "password"}
+	req := userDTO.LoginRequest{Email: "user@gmail.com", Password: "password"}
+	user := userDTO.User{Email: "user@gmail.com", Password: "password"}
 	userRepoMock.On("RetrieveLoginUser", c, req, user).Return("token", nil)
 	got, err := userRepoMock.RetrieveLoginUser(c, req, user)
 
@@ -77,8 +76,8 @@ func TestRetrieveLoginUser_Success(t *testing.T) {
 func TestRetrieveLoginUser_Fail(t *testing.T) {
 	c, _ := gin.CreateTestContext(nil)
 	userRepoMock := new(userRepoMock)
-	req := middlewareDto.LoginRequest{Email: "usar@gmail.com", Password: "password"}
-	user := userDto.User{Email: "user@gmail.com", Password: "password"}
+	req := userDTO.LoginRequest{Email: "usar@gmail.com", Password: "password"}
+	user := userDTO.User{Email: "user@gmail.com", Password: "password"}
 	expectedError := errors.New("invalid password")
 
 	userRepoMock.On("RetrieveLoginUser", c, req, user).Return("", expectedError)
@@ -94,7 +93,7 @@ func TestInsertUser_Success(t *testing.T) {
 	userRepoMock := new(userRepoMock)
 	id := uuid.New()
 	company := uuid.New()
-	user := userDto.User{ID: id, Name: "User Name", Email: "user@gmail.com", Password: "password", CompanyID: company}
+	user := userDTO.User{ID: id, Name: "User Name", Email: "user@gmail.com", Password: "password", CompanyID: company}
 	checkEmail, checkPass := true, true
 
 	userRepoMock.On("InsertUser", c, user, checkEmail, checkPass).Return(nil)
@@ -107,7 +106,7 @@ func TestInsertUser_Success(t *testing.T) {
 func TestInsertUser_Fail(t *testing.T) {
 	c, _ := gin.CreateTestContext(nil)
 	userRepoMock := new(userRepoMock)
-	user := userDto.User{Email: "user@gmail.com", Password: "password"}
+	user := userDTO.User{Email: "user@gmail.com", Password: "password"}
 	checkEmail, checkPass := true, true
 
 	expectedError := errors.New("email or password validation failed")
@@ -128,8 +127,8 @@ func TestRetrieveAllUser_Success(t *testing.T) {
 	email, name := "user@gmail.com", "User Name"
 	id := uuid.New()
 	company := uuid.New()
-	user := userDto.User{ID: id, Name: name, Email: email, Password: "password", CompanyID: company}
-	response := userDto.GetResponse{Data: []userDto.User{user}, Pagination: userDto.Paging{Page: page, Size: size}, TotalData: totalData}
+	user := userDTO.User{ID: id, Name: name, Email: email, Password: "password", CompanyID: company}
+	response := userDTO.GetResponse{Data: []userDTO.User{user}, Pagination: userDTO.Paging{Page: page, Size: size}, TotalData: totalData}
 
 	userRepoMock.On("RetrieveAllUser", c, page, size, totalData, email, name).Return(response, nil)
 
@@ -147,11 +146,11 @@ func TestRetrieveAllUser_Fail(t *testing.T) {
 	email, name := "user@gmail.com", "User Name"
 	expectedError := errors.New("internal server error")
 
-	userRepoMock.On("RetrieveAllUser", c, page, size, totalData, email, name).Return(userDto.GetResponse{}, expectedError)
+	userRepoMock.On("RetrieveAllUser", c, page, size, totalData, email, name).Return(userDTO.GetResponse{}, expectedError)
 
 	got, err := userRepoMock.RetrieveAllUser(c, page, size, totalData, email, name)
 
-	assert.Equal(t, userDto.GetResponse{}, got)
+	assert.Equal(t, userDTO.GetResponse{}, got)
 	assert.EqualError(t, err, expectedError.Error())
 }
 
@@ -160,7 +159,7 @@ func TestRetrieveUserByID_Success(t *testing.T) {
 	userRepoMock := new(userRepoMock)
 	id := uuid.New()
 	company := uuid.New()
-	user := userDto.User{ID: id, Name: "User Name", Email: "user@gmail.com", Password: "password", CompanyID: company}
+	user := userDTO.User{ID: id, Name: "User Name", Email: "user@gmail.com", Password: "password", CompanyID: company}
 
 	userRepoMock.On("RetrieveUserByID", c, id.String()).Return(user, nil)
 
@@ -176,11 +175,11 @@ func TestRetrieveUserByID_Fail(t *testing.T) {
 	id := uuid.New()
 	expectedError := errors.New("internal server error")
 
-	userRepoMock.On("RetrieveUserByID", c, id.String()).Return(userDto.User{}, expectedError)
+	userRepoMock.On("RetrieveUserByID", c, id.String()).Return(userDTO.User{}, expectedError)
 
 	got, err := userRepoMock.RetrieveUserByID(c, id.String())
 
-	assert.Equal(t, userDto.User{}, got)
+	assert.Equal(t, userDTO.User{}, got)
 	assert.EqualError(t, err, expectedError.Error())
 }
 
@@ -188,7 +187,7 @@ func TestEditUser_Success(t *testing.T) {
 	c, _ := gin.CreateTestContext(nil)
 	userRepoMock := new(userRepoMock)
 	userUpdates := map[string]interface{}{"name": "User Name", "password": "password"}
-	user := userDto.User{ID: uuid.New(), Name: "User Name", Email: "user@gmail.com", Password: "password", CompanyID: uuid.New(), Role: "ADMIN"}
+	user := userDTO.User{ID: uuid.New(), Name: "User Name", Email: "user@gmail.com", Password: "password", CompanyID: uuid.New(), Role: "ADMIN"}
 
 	userRepoMock.On("EditUser", c, user.ID.String(), userUpdates).Return(nil)
 
@@ -201,7 +200,7 @@ func TestEditUser_Fail(t *testing.T) {
 	c, _ := gin.CreateTestContext(nil)
 	userRepoMock := new(userRepoMock)
 	userUpdates := map[string]interface{}{"name": "User Name", "password": "password"}
-	user := userDto.User{ID: uuid.New(), Name: "User Name", Email: "user@gmail.com", Password: "password", CompanyID: uuid.New(), Role: "ADMIN"}
+	user := userDTO.User{ID: uuid.New(), Name: "User Name", Email: "user@gmail.com", Password: "password", CompanyID: uuid.New(), Role: "ADMIN"}
 	expectedError := errors.New("internal server error")
 
 	userRepoMock.On("EditUser", c, user.ID.String(), userUpdates).Return(expectedError)

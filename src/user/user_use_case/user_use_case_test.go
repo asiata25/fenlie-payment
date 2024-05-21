@@ -2,8 +2,7 @@ package userUsecase
 
 import (
 	"errors"
-	"finpro-fenlie/model/dto/middlewareDto"
-	"finpro-fenlie/model/dto/userDto"
+	userDTO "finpro-fenlie/model/dto/user"
 	"testing"
 
 	"github.com/gin-gonic/gin"
@@ -16,24 +15,24 @@ type userUCMock struct {
 	mock.Mock
 }
 
-func (m *userUCMock) Login(c *gin.Context, req middlewareDto.LoginRequest) (string, error) {
+func (m *userUCMock) Login(c *gin.Context, req userDTO.LoginRequest) (string, error) {
 	args := m.Called(c, req)
 	return args.String(0), args.Error(1)
 }
 
-func (m *userUCMock) CreateUser(c *gin.Context, user userDto.User) error {
+func (m *userUCMock) CreateUser(c *gin.Context, user userDTO.User) error {
 	args := m.Called(c, user)
 	return args.Error(0)
 }
 
-func (m *userUCMock) GetAllUser(c *gin.Context, page, size int, email, name string) (userDto.GetResponse, error) {
+func (m *userUCMock) GetAllUser(c *gin.Context, page, size int, email, name string) (userDTO.GetResponse, error) {
 	args := m.Called(c, page, size, email, name)
-	return args.Get(0).(userDto.GetResponse), args.Error(1)
+	return args.Get(0).(userDTO.GetResponse), args.Error(1)
 }
 
-func (m *userUCMock) GetUserByID(c *gin.Context, id string) (userDto.User, error) {
+func (m *userUCMock) GetUserByID(c *gin.Context, id string) (userDTO.User, error) {
 	args := m.Called(c, id)
-	return args.Get(0).(userDto.User), args.Error(1)
+	return args.Get(0).(userDTO.User), args.Error(1)
 }
 
 func (m *userUCMock) UpdateUser(c *gin.Context, id string, data map[string]interface{}) error {
@@ -50,7 +49,7 @@ func (m *userUCMock) DeleteUser(c *gin.Context, id string) error {
 func TestLogin_Success(t *testing.T) {
 	c, _ := gin.CreateTestContext(nil)
 	mockUserUC := new(userUCMock)
-	req := middlewareDto.LoginRequest{
+	req := userDTO.LoginRequest{
 		Email:    "user@gmail.com",
 		Password: "password",
 	}
@@ -65,7 +64,7 @@ func TestLogin_Success(t *testing.T) {
 func TestLogin_Failed(t *testing.T) {
 	c, _ := gin.CreateTestContext(nil)
 	mockUserUC := new(userUCMock)
-	req := middlewareDto.LoginRequest{
+	req := userDTO.LoginRequest{
 		Email:    "user@mail.com",
 		Password: "password",
 	}
@@ -83,7 +82,7 @@ func TestLogin_Failed(t *testing.T) {
 func TestCreateUser_Success(t *testing.T) {
 	c, _ := gin.CreateTestContext(nil)
 	mockUserUC := new(userUCMock)
-	user := userDto.User{
+	user := userDTO.User{
 		ID:        uuid.New(),
 		Name:      "User Name",
 		Email:     "user@gmail.com",
@@ -102,7 +101,7 @@ func TestCreateUser_Success(t *testing.T) {
 func TestCreateUser_Failed(t *testing.T) {
 	c, _ := gin.CreateTestContext(nil)
 	mockUserUC := new(userUCMock)
-	user := userDto.User{
+	user := userDTO.User{
 		ID:        uuid.New(),
 		Name:      "User Name",
 		Email:     "user@gmail.com",
@@ -127,7 +126,7 @@ func TestGetAllUser_Success(t *testing.T) {
 	size := 10
 	totalData := 5
 	email, name := "user@gmail.com", "User Name"
-	data := userDto.User{
+	data := userDTO.User{
 		ID:        uuid.New(),
 		Name:      name,
 		Email:     email,
@@ -135,12 +134,12 @@ func TestGetAllUser_Success(t *testing.T) {
 		CompanyID: uuid.New(),
 		Role:      "USER",
 	}
-	pagination := userDto.Paging{
+	pagination := userDTO.Paging{
 		Page: page,
 		Size: size,
 	}
-	response := userDto.GetResponse{
-		Data:       []userDto.User{data},
+	response := userDTO.GetResponse{
+		Data:       []userDTO.User{data},
 		Pagination: pagination,
 		TotalData:  int64(totalData),
 	}
@@ -159,13 +158,13 @@ func TestGetAllUser_Failed(t *testing.T) {
 	page := 1
 	size := 10
 	email, name := "user@gmail.com", "User Name"
-	data := userDto.User{}
-	pagination := userDto.Paging{
+	data := userDTO.User{}
+	pagination := userDTO.Paging{
 		Page: page,
 		Size: size,
 	}
-	response := userDto.GetResponse{
-		Data:       []userDto.User{data},
+	response := userDTO.GetResponse{
+		Data:       []userDTO.User{data},
 		Pagination: pagination,
 		TotalData:  0,
 	}
@@ -184,7 +183,7 @@ func TestGetUserByID_Success(t *testing.T) {
 	c, _ := gin.CreateTestContext(nil)
 	mockUserUC := new(userUCMock)
 	id := uuid.New()
-	data := userDto.User{
+	data := userDTO.User{
 		ID:        uuid.New(),
 		Name:      "User Name",
 		Email:     "user@gmail.com",
@@ -207,13 +206,13 @@ func TestGetUserByID_Failed(t *testing.T) {
 	id := uuid.New()
 	expectedError := errors.New("failed to retrieve data")
 
-	mockUserUC.On("GetUserByID", c, id.String()).Return(userDto.User{}, expectedError)
+	mockUserUC.On("GetUserByID", c, id.String()).Return(userDTO.User{}, expectedError)
 
 	result, err := mockUserUC.GetUserByID(c, id.String())
 
 	assert.NotNil(t, err)
 	assert.Equal(t, expectedError, err)
-	assert.Equal(t, userDto.User{}, result)
+	assert.Equal(t, userDTO.User{}, result)
 }
 
 func TestUpdateUser_Success(t *testing.T) {
