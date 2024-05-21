@@ -2,7 +2,7 @@ package categoryUseCase
 
 import (
 	"finpro-fenlie/helper"
-	"finpro-fenlie/model/dto/categoryDto"
+	categoryDto "finpro-fenlie/model/dto/category"
 	"finpro-fenlie/model/entity"
 	"finpro-fenlie/src/category"
 	"strconv"

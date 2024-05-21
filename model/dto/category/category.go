@@ -1,4 +1,4 @@
-package categoryDto
+package category
 
 type CreateCategoryRequest struct {
 	Name      string `json:"name,omitempty" gorm:"column:name;omitempty;not null"`

@@ -1,7 +1,7 @@
 package category
 
 import (
-	"finpro-fenlie/model/dto/categoryDto"
+	categoryDto "finpro-fenlie/model/dto/category"
 	"finpro-fenlie/model/entity"
 )
 

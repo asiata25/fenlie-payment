@@ -1,7 +1,7 @@
 package categoryDelivery
 
 import (
-	"finpro-fenlie/model/dto/categoryDto"
+	categoryDto "finpro-fenlie/model/dto/category"
 	jsonDTO "finpro-fenlie/model/dto/json"
 	"finpro-fenlie/pkg/validation"
 	"finpro-fenlie/src/category"
