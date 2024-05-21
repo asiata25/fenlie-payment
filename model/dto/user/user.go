@@ -1,4 +1,4 @@
-package userDto
+package user
 
 import "github.com/google/uuid"
 

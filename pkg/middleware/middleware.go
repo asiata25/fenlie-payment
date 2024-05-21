@@ -2,8 +2,8 @@ package middleware
 
 import (
 	"errors"
+	"finpro-fenlie/model/dto/auth"
 	jsonDTO "finpro-fenlie/model/dto/json"
-	"finpro-fenlie/model/dto/middlewareDto"
 	"os"
 	"strings"
 	"time"
@@ -34,7 +34,7 @@ var (
 func GenerateTokenJwt(username, role, companyID string, expiredAt int64) (string, error) {
 	loginExpDuration := time.Duration(expiredAt) * time.Minute
 	myExpiresAt := time.Now().Add(loginExpDuration).Unix()
-	claims := middlewareDto.JwtClaim{
+	claims := auth.JwtClaim{
 		StandardClaims: jwt.StandardClaims{
 			Issuer:    applicationName,
 			ExpiresAt: myExpiresAt,
@@ -66,7 +66,7 @@ func JWTAuth() gin.HandlerFunc {
 		}
 
 		tokenString := strings.Replace(authHeader, "Bearer ", "", -1)
-		claims := &middlewareDto.JwtClaim{}
+		claims := &auth.JwtClaim{}
 		token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
 			return jwtSignatureKey, nil
 		})
@@ -79,7 +79,7 @@ func JWTAuth() gin.HandlerFunc {
 			return
 		}
 
-		userInfo := &middlewareDto.UserInfo{
+		userInfo := &auth.UserInfo{
 			Email:     claims.Username,
 			CompanyID: claims.CompanyID,
 			Roles:     claims.Roles,
@@ -99,7 +99,7 @@ func AdminOnly() gin.HandlerFunc {
 			return
 		}
 
-		user, ok := userInfo.(*middlewareDto.UserInfo)
+		user, ok := userInfo.(*auth.UserInfo)
 		if !ok {
 			jsonDTO.NewResponseAuth(c, "Internal Server Error")
 			c.Abort()
@@ -121,13 +121,13 @@ func AdminOnly() gin.HandlerFunc {
 	}
 }
 
-func GetUserInfo(ctx *gin.Context) (*middlewareDto.UserInfo, error) {
+func GetUserInfo(ctx *gin.Context) (*auth.UserInfo, error) {
 	userInfo, exists := ctx.Get("userInfo")
 	if !exists {
 		return nil, errors.New("unauthorized")
 	}
 
-	user, ok := userInfo.(*middlewareDto.UserInfo)
+	user, ok := userInfo.(*auth.UserInfo)
 	if !ok {
 		return nil, errors.New("internal server error")
 	}

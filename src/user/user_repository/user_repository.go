@@ -2,8 +2,8 @@ package userRepository
 
 import (
 	"errors"
-	"finpro-fenlie/model/dto/middlewareDto"
-	"finpro-fenlie/model/dto/userDto"
+	"finpro-fenlie/model/dto/auth"
+	userDTO "finpro-fenlie/model/dto/user"
 	"finpro-fenlie/pkg/middleware"
 	"finpro-fenlie/pkg/validation"
 	"finpro-fenlie/src/user"
@@ -23,7 +23,7 @@ func NewUserRepository(db *gorm.DB) user.UserRepository {
 	return &userRepository{db}
 }
 
-func (repo *userRepository) RetrieveLoginUser(ctx *gin.Context, req middlewareDto.LoginRequest, user userDto.User) (string, error) {
+func (repo *userRepository) RetrieveLoginUser(ctx *gin.Context, req auth.LoginRequest, user userDTO.User) (string, error) {
 	// Validate password
 	if !comparePassword(req.Password, user.Password) {
 		return "", errors.New("invalid password")
@@ -40,7 +40,7 @@ func (repo *userRepository) RetrieveLoginUser(ctx *gin.Context, req middlewareDt
 	return token, nil
 }
 
-func (repo *userRepository) InsertUser(c *gin.Context, user userDto.User, checkEmail, checkPass bool) error {
+func (repo *userRepository) InsertUser(c *gin.Context, user userDTO.User, checkEmail, checkPass bool) error {
 	userLogged, err := middleware.GetUserInfo(c)
 	if err != nil {
 		return err
@@ -73,15 +73,15 @@ func (repo *userRepository) InsertUser(c *gin.Context, user userDto.User, checkE
 	return nil
 }
 
-func (repo *userRepository) RetrieveAllUser(c *gin.Context, page, size int, totalData int64, email, name string) (userDto.GetResponse, error) {
-	var users []userDto.User
-	var response userDto.GetResponse
+func (repo *userRepository) RetrieveAllUser(c *gin.Context, page, size int, totalData int64, email, name string) (userDTO.GetResponse, error) {
+	var users []userDTO.User
+	var response userDTO.GetResponse
 	userLogged, err := middleware.GetUserInfo(c)
 	if err != nil {
-		return userDto.GetResponse{}, err
+		return userDTO.GetResponse{}, err
 	}
 
-	query := repo.db.Model(&userDto.User{})
+	query := repo.db.Model(&userDTO.User{})
 
 	if email != "" {
 		query = query.Where("email = ?", email)
@@ -102,24 +102,24 @@ func (repo *userRepository) RetrieveAllUser(c *gin.Context, page, size int, tota
 	response.Data = users
 	response.TotalData = totalData
 	if page != 0 && size != 0 {
-		response.Pagination = userDto.Paging{Page: page, Size: size}
+		response.Pagination = userDTO.Paging{Page: page, Size: size}
 	} else {
-		response.Pagination = userDto.Paging{Page: 1, Size: 10}
+		response.Pagination = userDTO.Paging{Page: 1, Size: 10}
 
 	}
 
 	return response, nil
 }
 
-func (repo *userRepository) RetrieveUserByID(c *gin.Context, id string) (userDto.User, error) {
+func (repo *userRepository) RetrieveUserByID(c *gin.Context, id string) (userDTO.User, error) {
 	userLogged, err := middleware.GetUserInfo(c)
 	if err != nil {
-		return userDto.User{}, err
+		return userDTO.User{}, err
 	}
 
-	var user userDto.User
+	var user userDTO.User
 	if err := repo.db.Select("id", "name", "email", "company_id").Where("company_id = ? AND id = ? AND deleted_at IS NULL", userLogged.CompanyID, id).First(&user).Error; err != nil {
-		return userDto.User{}, err
+		return userDTO.User{}, err
 	}
 	return user, nil
 }
@@ -130,7 +130,7 @@ func (repo *userRepository) EditUser(c *gin.Context, id string, userUpdates map[
 		return err
 	}
 
-	var existingUser userDto.User
+	var existingUser userDTO.User
 	if err := repo.db.Where("id = ? AND company_id = ? AND deleted_at IS NULL", id, userLogged.CompanyID).First(&existingUser).Error; err != nil {
 		return err
 	}
@@ -159,7 +159,7 @@ func (repo *userRepository) RemoveUser(c *gin.Context, id string) error {
 		return errors.New("unauthorized")
 	}
 
-	var dbUser userDto.User
+	var dbUser userDTO.User
 	if err := repo.db.Select("email").Where("company_id = ? AND id = ? AND deleted_at IS NULL", userLogged.CompanyID, id).First(&dbUser).Error; err != nil {
 		return err
 	}
@@ -168,15 +168,15 @@ func (repo *userRepository) RemoveUser(c *gin.Context, id string) error {
 		return errors.New("you can't delete your own account")
 	}
 
-	if err := repo.db.Model(&userDto.User{}).Where("company_id = ? AND id = ?", userLogged.CompanyID, id).Update("deleted_at", gorm.Expr("CURRENT_TIMESTAMP")).Error; err != nil {
+	if err := repo.db.Model(&userDTO.User{}).Where("company_id = ? AND id = ?", userLogged.CompanyID, id).Update("deleted_at", gorm.Expr("CURRENT_TIMESTAMP")).Error; err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (repo *userRepository) RetrieveUserByEmail(email string) (userDto.User, error) {
-	var user userDto.User
+func (repo *userRepository) RetrieveUserByEmail(email string) (userDTO.User, error) {
+	var user userDTO.User
 	if err := repo.db.Where("email = ? AND deleted_at IS NULL", email).First(&user).Error; err != nil {
 		return user, err
 	}
@@ -191,7 +191,7 @@ func (repo *userRepository) CountUsers(c *gin.Context, email, name string) (int6
 	}
 
 	var count int64
-	query := repo.db.Select("id", "name", "email").Where("company_id = ? AND deleted_at IS NULL", userLogged.CompanyID).Model(&userDto.User{})
+	query := repo.db.Select("id", "name", "email").Where("company_id = ? AND deleted_at IS NULL", userLogged.CompanyID).Model(&userDTO.User{})
 
 	if email != "" {
 		query = query.Where("email = ?", email)
@@ -208,12 +208,12 @@ func (repo *userRepository) CountUsers(c *gin.Context, email, name string) (int6
 	return count, nil
 }
 
-func (repo *userRepository) CheckUserEmailPassword(user userDto.User) (bool, bool, error) {
-	var dbUser userDto.User
+func (repo *userRepository) CheckUserEmailPassword(user userDTO.User) (bool, bool, error) {
+	var dbUser userDTO.User
 	err := repo.db.Where("email = ?", user.Email).First(&dbUser).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			dbUser = userDto.User{}
+			dbUser = userDTO.User{}
 		} else {
 			return false, false, err
 		}

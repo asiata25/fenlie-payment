@@ -1,8 +1,8 @@
 package userUsecase
 
 import (
-	"finpro-fenlie/model/dto/middlewareDto"
-	"finpro-fenlie/model/dto/userDto"
+	"finpro-fenlie/model/dto/auth"
+	userDTO "finpro-fenlie/model/dto/user"
 	"finpro-fenlie/src/user"
 
 	"github.com/gin-gonic/gin"
@@ -17,7 +17,7 @@ func NewUserUsecase(userRepo user.UserRepository) user.UserUsecase {
 }
 
 // Implement Login
-func (usecase *userUC) Login(c *gin.Context, req middlewareDto.LoginRequest) (string, error) {
+func (usecase *userUC) Login(c *gin.Context, req auth.LoginRequest) (string, error) {
 	user, err := usecase.userRepo.RetrieveUserByEmail(req.Email)
 	if err != nil {
 		return "err", err
@@ -32,7 +32,7 @@ func (usecase *userUC) Login(c *gin.Context, req middlewareDto.LoginRequest) (st
 }
 
 // Implement CreateUser
-func (usecase *userUC) CreateUser(c *gin.Context, user userDto.User) error {
+func (usecase *userUC) CreateUser(c *gin.Context, user userDTO.User) error {
 	checkEmail, checkPass, err := usecase.userRepo.CheckUserEmailPassword(user)
 	if err != nil {
 		return err
@@ -47,10 +47,10 @@ func (usecase *userUC) CreateUser(c *gin.Context, user userDto.User) error {
 }
 
 // Implement GetUser
-func (usecase *userUC) GetAllUser(c *gin.Context, page, size int, email, name string) (userDto.GetResponse, error) {
+func (usecase *userUC) GetAllUser(c *gin.Context, page, size int, email, name string) (userDTO.GetResponse, error) {
 	totalData, err := usecase.userRepo.CountUsers(c, email, name)
 	if err != nil {
-		return userDto.GetResponse{}, err
+		return userDTO.GetResponse{}, err
 	}
 
 	response, err := usecase.userRepo.RetrieveAllUser(c, page, size, totalData, email, name)
@@ -61,7 +61,7 @@ func (usecase *userUC) GetAllUser(c *gin.Context, page, size int, email, name st
 }
 
 // Implement GetUserByID
-func (usecase *userUC) GetUserByID(c *gin.Context, id string) (userDto.User, error) {
+func (usecase *userUC) GetUserByID(c *gin.Context, id string) (userDTO.User, error) {
 	user, err := usecase.userRepo.RetrieveUserByID(c, id)
 	if err != nil {
 		return user, err

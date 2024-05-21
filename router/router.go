@@ -21,6 +21,6 @@ func InitRouter(v1Group *gin.RouterGroup, db *gorm.DB) {
 
 	// User Route
 	userRepo := userRepository.NewUserRepository(db)
-	userUC := userUsecase.NewUserUsecase(userRepo)
-	userDelivery.NewUserDelivery(v1Group, userUC)
+	userUseCase := userUsecase.NewUserUsecase(userRepo)
+	userDelivery.NewUserDelivery(v1Group, userUseCase)
 }
