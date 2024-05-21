@@ -73,9 +73,9 @@ func NewResponseUserPaging(c *gin.Context, result interface{}, page int, total i
 	})
 }
 
-func NewResponseSuccessToken(c *gin.Context, token, message, serviceCode, responseCode string) {
+func NewResponseSuccessToken(c *gin.Context, token, message string) {
 	c.JSON(http.StatusOK, jsonResponseToken{
-		Code:    "200" + serviceCode + responseCode,
+		Code:    "200",
 		Message: message,
 		Data: struct {
 			Token string `json:"token"`

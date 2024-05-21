@@ -1,7 +1,7 @@
 package userDelivery
 
 import (
-	"finpro-fenlie/model/dto/json"
+	jsonDTO "finpro-fenlie/model/dto/json"
 	"finpro-fenlie/model/dto/middlewareDto"
 	"finpro-fenlie/model/dto/userDto"
 	"finpro-fenlie/pkg/middleware"
@@ -38,33 +38,33 @@ func NewUserDelivery(v1Group *gin.RouterGroup, userUC user.UserUsecase) {
 func (u *UserDelivery) login(ctx *gin.Context) {
 	var req middlewareDto.LoginRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		json.NewResponseError(ctx, err.Error(), "01", "01")
+		jsonDTO.NewResponseError(ctx, err.Error())
 		return
 	}
 
-	users, err := u.userUC.Login(ctx, req)
+	token, err := u.userUC.Login(ctx, req)
 	if err != nil {
-		json.NewResponseError(ctx, err.Error(), "01", "01")
+		jsonDTO.NewResponseError(ctx, err.Error())
 		return
 	}
 
-	json.NewResponseSuccessToken(ctx, users, "success", "01", "01")
+	jsonDTO.NewResponseSuccessToken(ctx, token, "success")
 }
 
 func (u *UserDelivery) createUser(ctx *gin.Context) {
 	var user userDto.User
 	if err := ctx.ShouldBindJSON(&user); err != nil {
-		json.NewResponseError(ctx, err.Error(), "01", "01")
+		jsonDTO.NewResponseError(ctx, err.Error())
 		return
 	}
 
 	err := u.userUC.CreateUser(ctx, user)
 	if err != nil {
-		json.NewResponseError(ctx, err.Error(), "01", "01")
+		jsonDTO.NewResponseError(ctx, err.Error())
 		return
 	}
 
-	json.NewResponseSuccess(ctx, nil, "success", "01", "01")
+	jsonDTO.NewResponseSuccess(ctx, nil, "success")
 }
 
 func (u *UserDelivery) getUser(ctx *gin.Context) {
@@ -75,21 +75,21 @@ func (u *UserDelivery) getUser(ctx *gin.Context) {
 
 	users, err := u.userUC.GetAllUser(ctx, page, size, email, name)
 	if err != nil {
-		json.NewResponseError(ctx, err.Error(), "01", "01")
+		jsonDTO.NewResponseError(ctx, err.Error())
 		return
 	}
 
-	json.NewResponseSuccess(ctx, users, "success", "01", "01")
+	jsonDTO.NewResponseSuccess(ctx, users, "success")
 }
 
 func (u *UserDelivery) getUserById(ctx *gin.Context) {
 	id := ctx.Param("id")
 	users, err := u.userUC.GetUserByID(ctx, id)
 	if err != nil {
-		json.NewResponseError(ctx, err.Error(), "01", "01")
+		jsonDTO.NewResponseError(ctx, err.Error())
 		return
 	} else {
-		json.NewResponseSuccess(ctx, users, "success", "01", "01")
+		jsonDTO.NewResponseSuccess(ctx, users, "success")
 	}
 }
 
@@ -98,17 +98,17 @@ func (u *UserDelivery) updateUser(ctx *gin.Context) {
 
 	var userUpdates map[string]interface{}
 	if err := ctx.ShouldBindJSON(&userUpdates); err != nil {
-		json.NewResponseError(ctx, err.Error(), "01", "01")
+		jsonDTO.NewResponseError(ctx, err.Error())
 		return
 	}
 
 	err := u.userUC.UpdateUser(ctx, id, userUpdates)
 	if err != nil {
-		json.NewResponseError(ctx, err.Error(), "01", "01")
+		jsonDTO.NewResponseError(ctx, err.Error())
 		return
 	}
 
-	json.NewResponseSuccess(ctx, nil, "success", "01", "01")
+	jsonDTO.NewResponseSuccess(ctx, nil, "success")
 }
 
 func (u *UserDelivery) deleteUser(ctx *gin.Context) {
@@ -116,9 +116,9 @@ func (u *UserDelivery) deleteUser(ctx *gin.Context) {
 
 	err := u.userUC.DeleteUser(ctx, id)
 	if err != nil {
-		json.NewResponseError(ctx, err.Error(), "01", "01")
+		jsonDTO.NewResponseError(ctx, err.Error())
 		return
 	}
 
-	json.NewResponseSuccess(ctx, nil, "success", "01", "01")
+	jsonDTO.NewResponseSuccess(ctx, nil, "success")
 }

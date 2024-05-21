@@ -2,7 +2,7 @@ package middleware
 
 import (
 	"errors"
-	"finpro-fenlie/model/dto/json"
+	jsonDTO "finpro-fenlie/model/dto/json"
 	"finpro-fenlie/model/dto/middlewareDto"
 	"os"
 	"strings"
@@ -15,11 +15,11 @@ import (
 func BasicAuth(c *gin.Context) {
 	user, password, ok := c.Request.BasicAuth()
 	if !ok {
-		json.NewResponseAuth(c, "Invalid Token", "01", "01")
+		jsonDTO.NewResponseAuth(c, "Invalid Token")
 		return
 	}
 	if user != os.Getenv("CLIENT_ID") || password != os.Getenv("CLIENT_SECRET") {
-		json.NewResponseAuth(c, "Unauthorized", "01", "01")
+		jsonDTO.NewResponseAuth(c, "Unauthorized")
 		return
 	}
 	c.Next()
@@ -61,7 +61,7 @@ func JWTAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.GetHeader("Authorization")
 		if !strings.Contains(authHeader, "Bearer") {
-			json.NewResponseAuth(c, "Invalid Token", "01", "01")
+			jsonDTO.NewResponseAuth(c, "Invalid Token")
 			return
 		}
 
@@ -71,11 +71,11 @@ func JWTAuth() gin.HandlerFunc {
 			return jwtSignatureKey, nil
 		})
 		if err != nil {
-			json.NewResponseAuth(c, "Invalid Token", "01", "01")
+			jsonDTO.NewResponseAuth(c, "Invalid Token")
 			return
 		}
 		if !token.Valid {
-			json.NewResponseAuth(c, "Forbidden", "01", "01")
+			jsonDTO.NewResponseAuth(c, "Forbidden")
 			return
 		}
 
@@ -94,14 +94,14 @@ func AdminOnly() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		userInfo, exists := c.Get("userInfo")
 		if !exists {
-			json.NewResponseAuth(c, "Unauthorized", "01", "01")
+			jsonDTO.NewResponseAuth(c, "Unauthorized")
 			c.Abort()
 			return
 		}
 
 		user, ok := userInfo.(*middlewareDto.UserInfo)
 		if !ok {
-			json.NewResponseAuth(c, "Internal Server Error", "01", "01")
+			jsonDTO.NewResponseAuth(c, "Internal Server Error")
 			c.Abort()
 			return
 		}
@@ -112,7 +112,7 @@ func AdminOnly() gin.HandlerFunc {
 		}
 
 		if !isAdmin {
-			json.NewResponseAuth(c, "Forbidden", "01", "01")
+			jsonDTO.NewResponseAuth(c, "Forbidden")
 			c.Abort()
 			return
 		}
