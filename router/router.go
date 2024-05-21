@@ -9,7 +9,7 @@ import (
 	companyUseCase "finpro-fenlie/src/company/company_use_case"
 	"finpro-fenlie/src/user/userDelivery"
 	"finpro-fenlie/src/user/userRepository"
-	"finpro-fenlie/src/user/userUsecase"
+	"finpro-fenlie/src/user/userUsecase" fb16f3335816624466cd5442a8917d463759e49f
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
