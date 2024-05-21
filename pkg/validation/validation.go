@@ -2,6 +2,7 @@ package validation
 
 import (
 	"errors"
+	"regexp"
 	"strings"
 
 	jsonDTO "finpro-fenlie/model/dto/json"
@@ -131,4 +132,3 @@ func isValidEmailFormat(email string) bool {
 func isEmailUsed(email, dbEmail string) bool {
 	return email == dbEmail
 }
- fb16f33 (feat: category endpoint for get, get by id, create, delete, and update)
