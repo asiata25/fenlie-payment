@@ -2,7 +2,7 @@ package companyUseCase
 
 import (
 	"finpro-fenlie/helper"
-	"finpro-fenlie/model/dto"
+	companyDTO "finpro-fenlie/model/dto/company"
 	"finpro-fenlie/model/entity"
 	"finpro-fenlie/src/company"
 
@@ -14,8 +14,8 @@ type companyUseCase struct {
 }
 
 // GetAll implements company.CompanyUseCase.
-func (c *companyUseCase) GetAll() ([]*dto.CompanyResponse, error) {
-	var companies []*dto.CompanyResponse
+func (c *companyUseCase) GetAll() ([]*companyDTO.CompanyResponse, error) {
+	var companies []*companyDTO.CompanyResponse
 
 	results, err := c.repository.FindAll()
 	if err != nil {
@@ -30,7 +30,7 @@ func (c *companyUseCase) GetAll() ([]*dto.CompanyResponse, error) {
 }
 
 // Create implements company.CompanyUseCase.
-func (c *companyUseCase) Create(request dto.CompanyCreateRequest) error {
+func (c *companyUseCase) Create(request companyDTO.CompanyCreateRequest) error {
 	company := entity.Company{
 		Name:         request.Name,
 		Email:        request.Email,
@@ -55,17 +55,17 @@ func (c *companyUseCase) Delete(id string) error {
 }
 
 // GetById implements company.CompanyUseCase.
-func (c *companyUseCase) GetById(id string) (*dto.CompanyResponse, error) {
+func (c *companyUseCase) GetById(id string) (*companyDTO.CompanyResponse, error) {
 	company, err := c.repository.RetrieveByID(id)
 	if err = helper.CheckErrNotFound(err); err != nil {
-		return &dto.CompanyResponse{}, err
+		return &companyDTO.CompanyResponse{}, err
 	}
 
 	return helper.ToCompanyResponse(*company), nil
 }
 
 // Update implements company.CompanyUseCase.
-func (c *companyUseCase) Update(request dto.CompanyUpdateRequest) error {
+func (c *companyUseCase) Update(request companyDTO.CompanyUpdateRequest) error {
 	companyExisting, err := c.repository.RetrieveByID(request.ID)
 	if err != nil {
 		return err

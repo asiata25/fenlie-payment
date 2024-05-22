@@ -1,9 +1,8 @@
 package validation
 
 import (
-	"errors"
-	"regexp"
 	"strings"
+	"unicode"
 
 	jsonDTO "finpro-fenlie/model/dto/json"
 
@@ -45,10 +44,10 @@ func formatMessage(err validator.FieldError) string {
 		message = "minimum value is not exceed"
 	case "max":
 		message = "maximum value is exceed"
-	case "isPassword":
-		message = "The password must be a minimum of 8 characters, contain uppercase letters, lowercase letters and special characters"
 	case "oneof":
 		message = "value not accepted"
+	case "isPassword":
+		message = "the password must be a minimum of 8 characters, contain uppercase letters, lowercase letters and special characters"
 	}
 
 	return message
@@ -79,56 +78,29 @@ func convertFieldReuired(myValue string) string {
 	return myField
 }
 
-func ValidateEmail(email, dbEmail string) error {
-	if !isValidEmailFormat(email) {
-		return errors.New("invalid email format")
-	}
+var IsPassword validator.Func = func(fl validator.FieldLevel) bool {
+	password, ok := fl.Field().Interface().(string)
+	if ok {
+		upper := false
+		lower := false
+		symbol := false
 
-	if isEmailUsed(email, dbEmail) {
-		return errors.New("email already used")
-	}
+		for _, char := range password {
+			if unicode.IsUpper(char) {
+				upper = true
+			}
 
-	return nil
-}
+			if unicode.IsNumber(char) {
+				lower = true
+			}
 
-func ValidatePassword(password string) error {
-	if len(password) < 8 {
-		return errors.New("password must be at least 8 characters")
-	}
-
-	hasUppercase := false
-	hasLowercase := false
-	hasDigit := false
-	hasSpecial := false
-
-	for _, char := range password {
-		if 'A' <= char && char <= 'Z' {
-			hasUppercase = true
+			if unicode.IsSymbol(char) || unicode.IsPunct(char) {
+				symbol = true
+			}
 		}
-		if 'a' <= char && char <= 'z' {
-			hasLowercase = true
-		}
-		if '0' <= char && char <= '9' {
-			hasDigit = true
-		}
-		if !('A' <= char && char <= 'Z') && !('a' <= char && char <= 'z') && !('0' <= char && char <= '9') {
-			hasSpecial = true
-		}
+
+		return upper && lower && symbol
 	}
 
-	if !(hasUppercase && hasLowercase && hasDigit && hasSpecial) {
-		return errors.New("password must contain uppercase, lowercase, digit, and special character")
-	}
-
-	return nil
-}
-
-func isValidEmailFormat(email string) bool {
-	const emailRegex = `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`
-	re := regexp.MustCompile(emailRegex)
-	return re.MatchString(email)
-}
-
-func isEmailUsed(email, dbEmail string) bool {
-	return email == dbEmail
+	return false
 }

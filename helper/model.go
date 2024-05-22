@@ -1,13 +1,13 @@
 package helper
 
 import (
-	"finpro-fenlie/model/dto"
 	"finpro-fenlie/model/dto/category"
+	"finpro-fenlie/model/dto/company"
 	"finpro-fenlie/model/entity"
 )
 
-func ToCompanyResponse(entity entity.Company) *dto.CompanyResponse {
-	return &dto.CompanyResponse{
+func ToCompanyResponse(entity entity.Company) *company.CompanyResponse {
+	return &company.CompanyResponse{
 		ID:        entity.ID,
 		Name:      entity.Name,
 		Email:     entity.Email,

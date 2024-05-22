@@ -2,6 +2,7 @@ package app
 
 import (
 	"finpro-fenlie/config"
+	"finpro-fenlie/pkg/validation"
 	"finpro-fenlie/router"
 	"os"
 	"time"
@@ -9,6 +10,8 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/logger"
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
+	"github.com/go-playground/validator/v10"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"gorm.io/gorm"
@@ -98,6 +101,11 @@ func RunService() {
 
 	// set gin middleware for panic hanlder
 	r.Use(gin.Recovery())
+
+	// add custom validation for password
+	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
+		v.RegisterValidation("isPassword", validation.IsPassword)
+	}
 
 	// setup global endpoint
 	initializeDomainModule(r, conn)

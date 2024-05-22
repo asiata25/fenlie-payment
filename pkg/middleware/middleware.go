@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"errors"
 	"finpro-fenlie/helper"
 	"finpro-fenlie/model/dto/auth"
 	jsonDTO "finpro-fenlie/model/dto/json"
@@ -63,7 +62,7 @@ func JWTAuth(roles ...string) gin.HandlerFunc {
 			return
 		}
 
-		userInfo := &user.UserInfo{
+		userInfo := &user.UserResponse{
 			Email:     claims.Username,
 			CompanyID: claims.CompanyID,
 			Roles:     claims.Roles,
@@ -72,18 +71,4 @@ func JWTAuth(roles ...string) gin.HandlerFunc {
 
 		c.Next()
 	}
-}
-
-func GetUserInfo(ctx *gin.Context) (*user.UserInfo, error) {
-	userInfo, exists := ctx.Get("userInfo")
-	if !exists {
-		return nil, errors.New("unauthorized")
-	}
-
-	user, ok := userInfo.(*user.UserInfo)
-	if !ok {
-		return nil, errors.New("internal server error")
-	}
-
-	return user, nil
 }

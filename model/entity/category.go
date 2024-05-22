@@ -2,6 +2,8 @@ package entity
 
 import (
 	"time"
+
+	"gorm.io/gorm"
 )
 
 // type Category struct {
@@ -14,10 +16,10 @@ import (
 // }
 
 type Category struct {
-	ID        string     `gorm:"type:uuid;default:uuid_generate_v4();primary_key"`
-	Name      string     `gorm:"type:varchar(255);not null"`
-	CompanyID string     `gorm:"type:uuid;not null"`
-	CreatedAt time.Time  `gorm:"default:CURRENT_TIMESTAMP"`
-	UpdatedAt time.Time  `gorm:"default:CURRENT_TIMESTAMP"`
-	DeletedAt *time.Time `gorm:"index"`
+	ID        string         `gorm:"type:uuid;default:uuid_generate_v4();primary_key"`
+	Name      string         `gorm:"type:varchar(255);not null"`
+	CompanyID string         `gorm:"type:uuid;not null"`
+	CreatedAt time.Time      `gorm:"autoCreateTime"`
+	UpdatedAt time.Time      `gorm:"autoUpdateTime"`
+	DeletedAt gorm.DeletedAt `gorm:"index"`
 }
