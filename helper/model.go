@@ -26,17 +26,6 @@ func ToCategoryResponse(entity entity.Category) category.CategoryResponse {
 func ToProductResponse(entity entity.Product) product.ProductResponse {
 	return product.ProductResponse{
 		ID:          entity.ID,
-		Name:        entity.Name,
-		Price:       entity.Price,
-		Description: entity.Description,
-		Status:      entity.Status,
-		// Category: ,
-	}
-}
-
-func ToProductResponse(entity entity.Product) product.ProductResponse {
-	return product.ProductResponse{
-		ID:          entity.ID,
 		Name:        entity.ID,
 		Price:       entity.Price,
 		Description: entity.Description,
