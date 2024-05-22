@@ -17,8 +17,7 @@ func ToCompanyResponse(entity entity.Company) *company.CompanyResponse {
 
 func ToCategoryResponse(entity entity.Category) category.CategoryResponse {
 	return category.CategoryResponse{
-		ID:        entity.ID,
-		Name:      entity.Name,
-		CompanyID: entity.CompanyID,
+		ID:   entity.ID,
+		Name: entity.Name,
 	}
 }

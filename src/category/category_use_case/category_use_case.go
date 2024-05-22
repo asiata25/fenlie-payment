@@ -13,11 +13,10 @@ type categoryUseCase struct {
 }
 
 // CreateLoan implements category.CategoryUseCase.
-func (uc *categoryUseCase) CreateLoan(request *categoryDto.CreateCategoryRequest) error {
+func (uc *categoryUseCase) CreateLoan(request *categoryDto.CategoryRequest) error {
 
 	category := entity.Category{
-		Name:      request.Name,
-		CompanyID: request.CompanyID,
+		Name: request.Name,
 	}
 
 	err := uc.repository.Save(&category)
@@ -68,12 +67,10 @@ func (uc *categoryUseCase) GetLoanById(ID string) (categoryDto.CategoryResponse,
 }
 
 // Update implements category.CategoryUseCase.
-func (uc *categoryUseCase) UpdateLoan(request *categoryDto.UpdateCategoryRequest) error {
+func (uc *categoryUseCase) UpdateLoan(request *categoryDto.CategoryRequest) error {
 
 	category := entity.Category{
-		ID:        request.ID,
-		Name:      request.Name,
-		CompanyID: request.CompanyID,
+		Name: request.Name,
 	}
 
 	err := uc.repository.Update(&category)

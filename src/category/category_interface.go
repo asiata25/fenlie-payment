@@ -14,9 +14,9 @@ type CategoryRepository interface {
 }
 
 type CategoryUseCase interface {
-	CreateLoan(request *categoryDto.CreateCategoryRequest) error
+	CreateLoan(request *categoryDto.CategoryRequest) error
 	GetAllLoans(page, size string) (*[]categoryDto.CategoryResponse, int, error)
 	GetLoanById(ID string) (categoryDto.CategoryResponse, error)
-	UpdateLoan(request *categoryDto.UpdateCategoryRequest) error
+	UpdateLoan(request *categoryDto.CategoryRequest) error
 	DeleteLoan(ID string) error
 }

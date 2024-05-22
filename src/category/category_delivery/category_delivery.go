@@ -15,7 +15,7 @@ type categoryDelivery struct {
 }
 
 func (cd *categoryDelivery) Create(ctx *gin.Context) {
-	var request categoryDto.CreateCategoryRequest
+	var request categoryDto.CategoryRequest
 
 	if err := ctx.ShouldBindJSON(&request); err != nil {
 		validationErr := validation.GetValidationError(err)
@@ -68,7 +68,7 @@ func (cd *categoryDelivery) GetByID(ctx *gin.Context) {
 
 func (cd *categoryDelivery) Update(ctx *gin.Context) {
 	ID := ctx.Param("id")
-	var request categoryDto.UpdateCategoryRequest
+	var request categoryDto.CategoryRequest
 
 	request.ID = ID
 	if err := ctx.ShouldBindJSON(&request); err != nil {
