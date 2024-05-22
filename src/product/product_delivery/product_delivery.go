@@ -69,7 +69,7 @@ func (c *productDelivery) GetProduct(ctx *gin.Context) {
 		return
 	}
 
-	json.NewResponseSuccess(ctx, getProduct, "uccess create product")
+	json.NewResponseSuccess(ctx, getProduct, "OK")
 }
 
 func (c *productDelivery) UpdateProduct(ctx *gin.Context) {

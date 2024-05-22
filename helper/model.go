@@ -33,3 +33,15 @@ func ToProductResponse(entity entity.Product) product.ProductResponse {
 		// Category: ,
 	}
 }
+
+func ToProductResponse(entity entity.Product) product.ProductResponse {
+	return product.ProductResponse{
+		ID:          entity.ID,
+		Name:        entity.ID,
+		Price:       entity.Price,
+		Description: entity.Description,
+		Status:      entity.Status,
+		CategoryID:  entity.CategoryID,
+		CompanyID:   entity.CompanyID,
+	}
+}

@@ -31,11 +31,11 @@ func (repo *productRepository) GetAllProducts(page, pageSize int) ([]entity.Prod
 	return products, totalItems, nil
 }
 
-func (repo *productRepository) InsertProduct(product entity.Product) (entity.Product, error) {
+func (repo *productRepository) InsertProduct(product entity.Product) error {
 	if err := repo.db.Create(&product).Error; err != nil {
-		return entity.Product{}, err
+		return err
 	}
-	return product, nil
+	return nil
 
 }
 

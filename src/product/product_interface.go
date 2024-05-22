@@ -7,7 +7,7 @@ import (
 
 type ProductRepository interface {
 	GetAllProducts(page, pageSize int) ([]entity.Product, int64, error)
-	InsertProduct(product entity.Product) (entity.Product, error)
+	InsertProduct(product entity.Product) error
 	GetById(id string) (entity.Product, error)
 	UpdateProduct(id string, product entity.Product) error
 	SoftDeleteProduct(id string) error

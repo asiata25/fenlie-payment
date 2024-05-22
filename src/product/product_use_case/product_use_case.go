@@ -33,21 +33,18 @@ func (uc *productUC) GetAllProducts(page, pageSize int) ([]productDTO.ProductRes
 	return products, page, totalPages, totalItems, nil
 }
 
-func (uc *productUC) CreateProduct(product productDTO.ProductRequest) error {
-	prodEntity := entity.Product{
-		Name:        product.Name,
-		Price:       product.Price,
-		Description: product.Description,
-		Status:      product.Status,
-		CategoryID:  product.CategoryID,
+func (uc *productUC) CreateProduct(request productDTO.ProductCreateRequest) error {
+	product := entity.Product{
+		Name:        request.Name,
+		Price:       request.Price,
+		Description: request.Description,
+		Status:      request.Status,
+		CategoryID:  request.CategoryID,
+		CompanyID:   request.CompanyID,
 	}
 
-	_, err := uc.productRepo.InsertProduct(prodEntity)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	error := uc.productRepo.InsertProduct(product)
+	return error
 }
 
 func (uc *productUC) GetProduct(id string) (productDTO.ProductResponse, error) {
