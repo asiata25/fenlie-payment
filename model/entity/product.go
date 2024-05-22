@@ -7,15 +7,14 @@ import (
 )
 
 type Product struct {
-	ID          string         `gorm:"column:id;primaryKey;default:gen_random_uuid()"`
-	Name        string         `gorm:"column:name"`
-	Price       int            `gorm:"column:price"`
-	Description string         `gorm:"column:description"`
-	Status      bool           `gorm:"column:status"`
-	CategoryID  string         `gorm:"type:uuid"`
-	CreatedAt   time.Time      `gorm:"column:created_at;autoCreateTime"`
-	UpdatedAt   time.Time      `gorm:"column:updated_at;autoUpdateTime"`
-	DeletedAt   gorm.DeletedAt `gorm:"column:deleted_at;index"`
-	CompanyID   string         `gorm:"column:company_id"`
-	Company     Company        `gorm:"foreignKey:CompanyID"`
+	ID          string         `gorm:"primaryKey;default:gen_random_uuid()"`
+	Name        string         `json:"name"`
+	Price       int            `json:"price"`
+	Description string         `json:"description"`
+	Status      bool           `json:"status"`
+	CategoryID  string         `json:"category_id" gorm:"type:uuid"`
+	CompanyID   string         `json:"company_id" gorm:"type:uuid"`
+	CreatedAt   time.Time      `json:"created_at" gorm:"autoCreateTime"`
+	UpdatedAt   time.Time      `json:"updated_at" gorm:"autoUpdateTime"`
+	DeletedAt   gorm.DeletedAt `json:"deleted_at" gorm:"index"`
 }
