@@ -2,7 +2,7 @@ package productDelivery
 
 import (
 	"finpro-fenlie/model/dto/json"
-	"finpro-fenlie/model/entity"
+	productDTO "finpro-fenlie/model/dto/product"
 	"finpro-fenlie/pkg/validation"
 	"finpro-fenlie/src/product"
 	"strconv"
@@ -42,7 +42,7 @@ func (c *productDelivery) GetAllProducts(ctx *gin.Context) {
 }
 
 func (c *productDelivery) CreateProduct(ctx *gin.Context) {
-	var product entity.Product
+	var product productDTO.ProductRequest
 
 	if err := ctx.ShouldBindJSON(&product); err != nil {
 		validationError := validation.GetValidationError(err)
@@ -52,20 +52,18 @@ func (c *productDelivery) CreateProduct(ctx *gin.Context) {
 		}
 	}
 
-	createdProduct, err := c.productUC.CreateProduct(product)
+	err := c.productUC.CreateProduct(product)
 	if err != nil {
 		json.NewResponseError(ctx, err.Error())
 		return
 	}
 
-	json.NewResponseSuccess(ctx, createdProduct, "success sreate product")
+	json.NewResponseSuccess(ctx, nil, "success sreate product")
 }
 
 func (c *productDelivery) GetProduct(ctx *gin.Context) {
 	id := ctx.Param("id")
-	var product entity.Product
-
-	getProduct, err := c.productUC.GetProduct(id, product)
+	getProduct, err := c.productUC.GetProduct(id)
 	if err != nil {
 		json.NewResponseError(ctx, err.Error())
 		return
@@ -76,7 +74,7 @@ func (c *productDelivery) GetProduct(ctx *gin.Context) {
 
 func (c *productDelivery) UpdateProduct(ctx *gin.Context) {
 	id := ctx.Param("id")
-	var product entity.Product
+	var product productDTO.ProductRequest
 
 	if err := ctx.ShouldBindJSON(&product); err != nil {
 		validationError := validation.GetValidationError(err)
@@ -86,13 +84,13 @@ func (c *productDelivery) UpdateProduct(ctx *gin.Context) {
 		}
 	}
 
-	_, err := c.productUC.UpdateProduct(id, product)
+	err := c.productUC.UpdateProduct(id, product)
 	if err != nil {
 		json.NewResponseError(ctx, err.Error())
 		return
 	}
 
-	result, err := c.productUC.GetProduct(id, product)
+	result, err := c.productUC.GetProduct(id)
 	if err != nil {
 		json.NewResponseError(ctx, err.Error())
 		return

@@ -1,6 +1,9 @@
 package product
 
-import "finpro-fenlie/model/entity"
+import (
+	"finpro-fenlie/model/dto/product"
+	"finpro-fenlie/model/entity"
+)
 
 type ProductRepository interface {
 	GetAllProducts(page, pageSize int) ([]entity.Product, int64, error)
@@ -11,9 +14,9 @@ type ProductRepository interface {
 }
 
 type ProductUsecase interface {
-	GetAllProducts(page, pageSize int) ([]entity.Product, int, int64, int64, error)
-	CreateProduct(product entity.Product) (entity.Product, error)
-	GetProduct(id string, product entity.Product) (entity.Product, error)
-	UpdateProduct(id string, product entity.Product) (entity.Product, error)
+	GetAllProducts(page, pageSize int) ([]product.ProductResponse, int, int64, int64, error)
+	CreateProduct(product product.ProductRequest) error
+	GetProduct(id string) (product.ProductResponse, error)
+	UpdateProduct(id string, product product.ProductRequest) error
 	DeleteProduct(id string) error
 }
