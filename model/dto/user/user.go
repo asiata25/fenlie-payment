@@ -9,7 +9,7 @@ type (
 	UserResponse struct {
 		Email     string `json:"email"`
 		CompanyID string `json:"company_id"`
-		Roles     string `json:"roles,omitempty"`
+		Roles     string `json:"roles"`
 	}
 
 	CreateUserRequest struct {
