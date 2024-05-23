@@ -1,7 +1,7 @@
 package company
 
 import (
-	"finpro-fenlie/model/dto"
+	"finpro-fenlie/model/dto/company"
 	"finpro-fenlie/model/entity"
 )
 
@@ -14,9 +14,9 @@ type CompanyRepository interface {
 }
 
 type CompanyUseCase interface {
-	Create(request dto.CompanyCreateRequest) error
-	Update(request dto.CompanyUpdateRequest) error
+	Create(request company.CompanyCreateRequest) error
+	Update(request company.CompanyUpdateRequest) error
 	Delete(id string) error
-	GetById(id string) (*dto.CompanyResponse, error)
-	GetAll() ([]*dto.CompanyResponse, error)
+	GetById(id string) (*company.CompanyResponse, error)
+	GetAll() ([]*company.CompanyResponse, error)
 }

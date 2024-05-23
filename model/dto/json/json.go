@@ -1,4 +1,4 @@
-package jsonDTO
+package json
 
 import (
 	"net/http"
@@ -12,14 +12,6 @@ type (
 		Code    string      `json:"responseCode"`
 		Message string      `json:"responseMessage"`
 		Data    interface{} `json:"data,omitempty"`
-	}
-
-	jsonResponseToken struct {
-		Code    string `json:"responseCode"`
-		Message string `json:"responseMessage"`
-		Data    struct {
-			Token string `json:"token"`
-		} `json:"data,omitempty"`
 	}
 
 	jsonErrorResponse struct {
@@ -38,19 +30,16 @@ type (
 		Page      int `json:"page"`
 		TotalData int `json:"totalData"`
 	}
+
 	ValidationField struct {
 		FieldName string `json:"field"`
 		Message   string `json:"message"`
 	}
+
 	jsonBadRequestResponse struct {
 		Code      string            `json:"responseCode"`
 		Message   string            `json:"responseMessage"`
 		ErrorDesc []ValidationField `json:"error_description,omitempty"`
-	}
-
-	response struct {
-		Code    string `json:"responseCode"`
-		Message string `json:"responseMessage"`
 	}
 )
 
@@ -62,25 +51,13 @@ func NewResponseSuccess(c *gin.Context, result interface{}, message string) {
 	})
 }
 
-func NewResponseUserPaging(c *gin.Context, result interface{}, page int, total int) {
+func NewResponseWithPaging(c *gin.Context, result interface{}, page int, total int) {
 	c.JSON(http.StatusOK, paginationResponse{
 		Code: "200",
 		Data: result,
 		Paging: pageData{
 			Page:      page,
 			TotalData: total,
-		},
-	})
-}
-
-func NewResponseSuccessToken(c *gin.Context, token, message string) {
-	c.JSON(http.StatusOK, jsonResponseToken{
-		Code:    "200",
-		Message: message,
-		Data: struct {
-			Token string `json:"token"`
-		}{
-			Token: token,
 		},
 	})
 }
@@ -112,13 +89,6 @@ func NewResponseForbidden(c *gin.Context, message string) {
 
 func NewResponseUnauthorized(c *gin.Context, message string) {
 	c.JSON(http.StatusUnauthorized, jsonResponse{
-		Code:    "401",
-		Message: message,
-	})
-}
-
-func NewResponseAuth(c *gin.Context, message string) {
-	c.AbortWithStatusJSON(http.StatusUnauthorized, response{
 		Code:    "401",
 		Message: message,
 	})

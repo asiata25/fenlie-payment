@@ -1,4 +1,4 @@
-package dto
+package company
 
 type (
 	CompanyCreateRequest struct {

@@ -1,7 +1,7 @@
 package companyDelivery
 
 import (
-	"finpro-fenlie/model/dto"
+	companyDTO "finpro-fenlie/model/dto/company"
 	jsonDTO "finpro-fenlie/model/dto/json"
 	"finpro-fenlie/pkg/validation"
 	"finpro-fenlie/src/company"
@@ -27,7 +27,7 @@ func (c *companyDelivery) getById(ctx *gin.Context) {
 }
 
 func (c *companyDelivery) create(ctx *gin.Context) {
-	var request dto.CompanyCreateRequest
+	var request companyDTO.CompanyCreateRequest
 	if err := ctx.ShouldBindJSON(&request); err != nil {
 		validationErr := validation.GetValidationError(err)
 		if len(validationErr) > 0 {
@@ -71,7 +71,7 @@ func (c *companyDelivery) getAll(ctx *gin.Context) {
 }
 
 func (c *companyDelivery) update(ctx *gin.Context) {
-	var request dto.CompanyUpdateRequest
+	var request companyDTO.CompanyUpdateRequest
 	if err := ctx.ShouldBindJSON(&request); err != nil {
 		validationErr := validation.GetValidationError(err)
 		if len(validationErr) > 0 {

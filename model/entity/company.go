@@ -7,11 +7,11 @@ import (
 )
 
 type Company struct {
-	ID           string `gorm:"primaryKey;default:gen_random_uuid()"`
-	Name         string
-	Email        string
-	ClientSecret string
-	CreatedAt    time.Time      `gorm:"autoCreateTime"`
-	UpdatedAt    time.Time      `gorm:"autoUpdateTime"`
-	DeletedAt    gorm.DeletedAt `gorm:"index"`
+	ID           string         `gorm:"column:id;primaryKey;default:gen_random_uuid()"`
+	Name         string         `gorm:"column:name"`
+	Email        string         `gorm:"column:email;unique"`
+	ClientSecret string         `gorm:"column:client_secret"`
+	CreatedAt    time.Time      `gorm:"column:created_at;autoCreateTime"`
+	UpdatedAt    time.Time      `gorm:"column:updated_at;autoUpdateTime"`
+	DeletedAt    gorm.DeletedAt `gorm:"column:deleted_at;index"`
 }
