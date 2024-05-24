@@ -5,6 +5,7 @@ import (
 	"finpro-fenlie/pkg/validation"
 	"finpro-fenlie/router"
 	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -14,7 +15,6 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
-	"github.com/rs/zerolog/pkgerrors"
 	"gorm.io/gorm"
 )
 
@@ -33,8 +33,40 @@ func RunService() {
 	time.Local = time.FixedZone("Asia/Jakarta", 7*60*60)
 
 	// set global logger with zerolog
-	zerolog.ErrorStackMarshaler = pkgerrors.MarshalStack
-	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stdout}).With().Stack().Caller().Logger()
+	// Setup output to console
+	consoleWriter := zerolog.ConsoleWriter{Out: os.Stdout}
+
+	// Setup output to file
+	logPath := "log"
+	logFileName := time.Now().Format("2006-01-02") + ".log"
+	logFilePath := filepath.Join(logPath, logFileName)
+
+	// Create log directory if not exists
+	if _, err := os.Stat(logPath); os.IsNotExist(err) {
+		os.Mkdir(logPath, os.ModePerm)
+	}
+
+	// Open log file
+	logFile, err := os.OpenFile(logFilePath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	if err != nil {
+		log.Fatal().Err(err).Msg("Failed to open log file")
+	}
+	defer logFile.Close()
+
+	// Setup output to file
+	fileWriter := zerolog.ConsoleWriter{Out: logFile}
+
+	// Combine console and file output
+	multi := zerolog.MultiLevelWriter(consoleWriter, fileWriter)
+
+	// Set logger output
+	log.Logger = log.Output(multi).With().Caller().Logger()
+
+	// Filter out messages with level lower than error
+	errorLogger := zerolog.New(multi).Level(zerolog.ErrorLevel)
+
+	// Set logger output to file for error level logs
+	log.Logger = errorLogger
 
 	// setup config file
 	configData, err := config.InitEnv()
