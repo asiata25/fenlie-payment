@@ -14,7 +14,7 @@ type categoryMock struct {
 	mock.Mock
 }
 
-func (m *categoryMock) CreateLoan(request *categoryDto.CreateCategoryRequest) error {
+func (m *categoryMock) CreateLoan(request *categoryDto.CategoryRequest) error {
 	args := m.Called(request)
 	return args.Error(0)
 }
@@ -29,7 +29,7 @@ func (m *categoryMock) GetLoanById(ID string) (categoryDto.CategoryResponse, err
 	return args.Get(0).(categoryDto.CategoryResponse), args.Error(1)
 }
 
-func (m *categoryMock) UpdateLoan(request *categoryDto.UpdateCategoryRequest) error {
+func (m *categoryMock) UpdateLoan(request *categoryDto.CategoryRequest) error {
 	args := m.Called(request)
 	return args.Error(0)
 }
@@ -41,7 +41,7 @@ func (m *categoryMock) DeleteLoan(ID string) error {
 
 func TestCreateLoan_Success(t *testing.T) {
 	mockCategoryUC := new(categoryMock)
-	category := categoryDto.CreateCategoryRequest{
+	category := categoryDto.CategoryRequest{
 		Name:      "Category 1",
 		CompanyID: uuid.New().String(),
 	}
@@ -55,7 +55,7 @@ func TestCreateLoan_Success(t *testing.T) {
 
 func TestCreateLoan_Fail(t *testing.T) {
 	mockCategoryUC := new(categoryMock)
-	category := categoryDto.CreateCategoryRequest{
+	category := categoryDto.CategoryRequest{
 		Name:      "Category 1",
 		CompanyID: uuid.New().String(),
 	}
@@ -122,7 +122,7 @@ func TestGetLoaById_Fail(t *testing.T) {
 
 func TestUpdateLoan_Success(t *testing.T) {
 	mockCategoryUC := new(categoryMock)
-	category := categoryDto.UpdateCategoryRequest{
+	category := categoryDto.CategoryRequest{
 		Name:      "Category 1",
 		CompanyID: uuid.New().String(),
 	}
@@ -136,7 +136,7 @@ func TestUpdateLoan_Success(t *testing.T) {
 
 func TestUpdateLoan_Fail(t *testing.T) {
 	mockCategoryUC := new(categoryMock)
-	category := categoryDto.UpdateCategoryRequest{
+	category := categoryDto.CategoryRequest{
 		Name:      "Category 1",
 		CompanyID: uuid.New().String(),
 	}

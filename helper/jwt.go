@@ -21,7 +21,7 @@ func GenerateTokenJwt(username, role, companyID string, expiredAt int64) (string
 		},
 		CompanyID: companyID,
 		Username:  username,
-		Roles:     role,
+		Role:      role,
 	}
 
 	token := jwt.NewWithClaims(

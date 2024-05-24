@@ -6,6 +6,7 @@ type ProductRequest struct {
 	Description string `json:"description"`
 	Status      bool   `json:"status" binding:"required,boolean"`
 	CategoryID  string `json:"category_id,omitempty"`
+	CompanyID   string `json:"company_id"`
 }
 
 type ProductResponse struct {

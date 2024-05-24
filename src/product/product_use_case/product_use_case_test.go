@@ -19,7 +19,7 @@ func (m *productMockUC) GetAllProducts(page, pageSize int) ([]productDTO.Product
 	return args.Get(0).([]productDTO.ProductResponse), args.Get(1).(int), args.Get(2).(int64), args.Get(3).(int64), args.Error(4)
 }
 
-func (m *productMockUC) CreateProduct(request productDTO.ProductCreateRequest) error {
+func (m *productMockUC) CreateProduct(request productDTO.ProductRequest) error {
 	args := m.Called(request)
 	return args.Error(0)
 }
@@ -29,7 +29,7 @@ func (m *productMockUC) GetProduct(id string) (productDTO.ProductResponse, error
 	return args.Get(0).(productDTO.ProductResponse), args.Error(1)
 }
 
-func (m *productMockUC) UpdateProduct(id string, product productDTO.ProductUpdateRequest) error {
+func (m *productMockUC) UpdateProduct(id string, product productDTO.ProductRequest) error {
 	args := m.Called(id, product)
 	return args.Error(0)
 }
@@ -66,7 +66,7 @@ func TestGetAllProducts_Fail(t *testing.T) {
 
 func TestCreateProduct_Success(t *testing.T) {
 	productMockUC := new(productMockUC)
-	request := productDTO.ProductCreateRequest{
+	request := productDTO.ProductRequest{
 		Name:        "Produk 1",
 		Price:       5000,
 		Description: "description",
@@ -84,7 +84,7 @@ func TestCreateProduct_Success(t *testing.T) {
 
 func TestCreateProduct_Fail(t *testing.T) {
 	productMockUC := new(productMockUC)
-	request := productDTO.ProductCreateRequest{
+	request := productDTO.ProductRequest{
 		Name:        "Produk 1",
 		Price:       5000,
 		Description: "description",
@@ -129,7 +129,7 @@ func TestGetProduct_Fail(t *testing.T) {
 func TestUpdateProduct_Success(t *testing.T) {
 	productRepoMock := new(productMockUC)
 	id := uuid.New().String()
-	product := productDTO.ProductUpdateRequest{
+	product := productDTO.ProductRequest{
 		Name:        "Produk 1",
 		Price:       5000,
 		Description: "description",
@@ -148,7 +148,7 @@ func TestUpdateProduct_Success(t *testing.T) {
 func TestUpdateProduct_Fail(t *testing.T) {
 	productRepoMock := new(productMockUC)
 	id := uuid.New().String()
-	product := productDTO.ProductUpdateRequest{
+	product := productDTO.ProductRequest{
 		Name:        "Produk 1",
 		Price:       5000,
 		Description: "description",

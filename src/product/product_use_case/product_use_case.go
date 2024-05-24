@@ -33,7 +33,7 @@ func (uc *productUC) GetAllProducts(page, pageSize int) ([]productDTO.ProductRes
 	return products, page, totalPages, totalItems, nil
 }
 
-func (uc *productUC) CreateProduct(request productDTO.ProductCreateRequest) error {
+func (uc *productUC) CreateProduct(request productDTO.ProductRequest) error {
 	product := entity.Product{
 		Name:        request.Name,
 		Price:       request.Price,
