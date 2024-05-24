@@ -63,10 +63,11 @@ func RunService() {
 	log.Logger = log.Output(multi).With().Caller().Logger()
 
 	// Filter out messages with level lower than error
-	errorLogger := zerolog.New(multi).Level(zerolog.ErrorLevel)
+	// errorLogger := zerolog.New(multi).Level(zerolog.ErrorLevel)
 
 	// Set logger output to file for error level logs
-	log.Logger = errorLogger
+	// FIXME: log.Logger in line 63 will be overwrite, so in database will only show error log
+	// log.Logger = errorLogger
 
 	// setup config file
 	configData, err := config.InitEnv()

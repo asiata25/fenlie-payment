@@ -1,2 +1,10 @@
-[90m<nil>[0m [31mERR[0m [1mFailed to open database connection[0m [36merror=[0m[31m[1m"failed to connect to `host=localhost user=postgres database=finproo`: server error (FATAL: database \"finproo\" does not exist (SQLSTATE 3D000))"[0m[0m
-[90m<nil>[0m [31mERR[0m [1mRunService.ConnectDB.err : failed to connect to `host=localhost user=postgres database=finproo`: server error (FATAL: database "finproo" does not exist (SQLSTATE 3D000))[0m
+[90m7:59PM[0m [32mINF[0m [1mapp/app.go:77[0m[36m >[0m [1mSuccess load .env[0m [36mconfig=[0m{"APP LOG MODE":1,"APP PORT":":8080","CLIENT ID":"khoir","CLIENT SECRET":"rahasia","DB HOST":"localhost","DB LOG LEVEL":1,"DB MAX CONN":100,"DB MAX IDLE":10,"DB MAX LIFETIME":"1h","DB NAME":"fenlie","DB PASS":"root","DB PORT":5432,"DB USER":"lutfikhoir","VERSION":"v0.0.1"}
+[90m7:59PM[0m [32mINF[0m [1mconfig/database.go:22[0m[36m >[0m [1mTrying to connect to the database . . .[0m
+[90m7:59PM[0m [32mINF[0m [1mconfig/database.go:40[0m[36m >[0m [1mSuccessfully connect to the database[0m
+[90m7:59PM[0m [32mINF[0m [1mapp/app.go:148[0m[36m >[0m [1mService running version: v0.0.1[0m
+[90m8:01PM[0m [32mINF[0m [1mapp/app.go:78[0m[36m >[0m [1mSuccess load .env[0m [36mconfig=[0m{"APP LOG MODE":1,"APP PORT":":8080","CLIENT ID":"khoir","CLIENT SECRET":"rahasia","DB HOST":"localhost","DB LOG LEVEL":1,"DB MAX CONN":100,"DB MAX IDLE":10,"DB MAX LIFETIME":"1h","DB NAME":"fenlie","DB PASS":"root","DB PORT":5432,"DB USER":"lutfikhoir","VERSION":"v0.0.1"}
+[90m8:01PM[0m [32mINF[0m [1mconfig/database.go:22[0m[36m >[0m [1mTrying to connect to the database . . .[0m
+[90m8:01PM[0m [32mINF[0m [1mconfig/database.go:40[0m[36m >[0m [1mSuccessfully connect to the database[0m
+[90m8:01PM[0m [32mINF[0m [1mapp/app.go:149[0m[36m >[0m [1mService running version: v0.0.1[0m
+[90m8:01PM[0m [32mINF[0m [1mconfig/database.go:18[0m[36m >[0m [1m[31;1m/Users/lutfikhoir/Documents/Learn-Golang/enigma-camp/finpro-fenlie/src/company/company_repository/company_repository.go:37 [35;1mERROR: invalid input syntax for type uuid: "3a95736e-e317-498c-9b70-648a1ca5544v" (SQLSTATE 22P02)
+[0m[33m[21.832ms] [34;1m[rows:0][0m SELECT * FROM "companies" WHERE id = '3a95736e-e317-498c-9b70-648a1ca5544v' AND "companies"."deleted_at" IS NULL LIMIT 1[0m
