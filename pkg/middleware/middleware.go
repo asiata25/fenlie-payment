@@ -5,24 +5,35 @@ import (
 	"finpro-fenlie/model/dto/auth"
 	jsonDTO "finpro-fenlie/model/dto/json"
 	"finpro-fenlie/model/dto/user"
-	"os"
+	"finpro-fenlie/src/company"
 	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
+	"golang.org/x/crypto/bcrypt"
 )
 
-func BasicAuth(c *gin.Context) {
-	user, password, ok := c.Request.BasicAuth()
-	if !ok {
-		jsonDTO.NewResponseUnauthorized(c, "unauthorized")
-		return
+func BasicAuth(companyUseCase company.CompanyUseCase) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		companyId, companySecret, ok := c.Request.BasicAuth()
+
+		if !ok {
+			jsonDTO.NewResponseUnauthorized(c, "unauthorized")
+			return
+		}
+
+		company, err := companyUseCase.GetById(companyId)
+		if err != nil {
+			jsonDTO.NewResponseError(c, err.Error())
+			return
+		}
+
+		if err := bcrypt.CompareHashAndPassword([]byte(company.SecretKey), []byte(companySecret)); err != nil {
+			jsonDTO.NewResponseUnauthorized(c, "unauthorized")
+			return
+		}
+		c.Next()
 	}
-	if user != os.Getenv("CLIENT_ID") || password != os.Getenv("CLIENT_SECRET") {
-		jsonDTO.NewResponseUnauthorized(c, "unauthorized")
-		return
-	}
-	c.Next()
 }
 
 func JWTAuth(roles ...string) gin.HandlerFunc {
@@ -51,7 +62,7 @@ func JWTAuth(roles ...string) gin.HandlerFunc {
 		validRole := false
 		if len(roles) > 0 {
 			for _, role := range roles {
-				if role == claims.Roles {
+				if role == claims.Role {
 					validRole = true
 					break
 				}
@@ -65,7 +76,7 @@ func JWTAuth(roles ...string) gin.HandlerFunc {
 		userInfo := &user.UserResponse{
 			Email:     claims.Username,
 			CompanyID: claims.CompanyID,
-			Roles:     claims.Roles,
+			Role:      claims.Role,
 		}
 		c.Set("userInfo", userInfo)
 

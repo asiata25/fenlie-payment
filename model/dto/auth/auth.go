@@ -9,6 +9,6 @@ type (
 		jwt.RegisteredClaims
 		Username  string `json:"username"`
 		CompanyID string `json:"company_id"`
-		Roles     string `json:"role,omitempty"`
+		Role      string `json:"role"`
 	}
 )

@@ -1,6 +1,7 @@
 package router
 
 import (
+	"finpro-fenlie/pkg/middleware"
 	categoryDelivery "finpro-fenlie/src/category/category_delivery"
 	categoryRepository "finpro-fenlie/src/category/category_repository"
 	categoryUseCase "finpro-fenlie/src/category/category_use_case"
@@ -22,14 +23,17 @@ func InitRouter(v1Group *gin.RouterGroup, db *gorm.DB) {
 	companyUseCase := companyUseCase.NewCompanyUseCase(companyRepository)
 	companyDelivery.NewCompanyDelivery(v1Group, companyUseCase)
 
-	// Category Route
-	categoryRepo := categoryRepository.NewCategoryRepository(db)
-	categoryUseCase := categoryUseCase.NewCategoryUseCase(categoryRepo)
-	categoryDelivery.NewCategoryDelivery(v1Group, categoryUseCase)
+	v1Group.Use(middleware.BasicAuth(companyUseCase))
+	{
+		// Category Route
+		categoryRepo := categoryRepository.NewCategoryRepository(db)
+		categoryUseCase := categoryUseCase.NewCategoryUseCase(categoryRepo)
+		categoryDelivery.NewCategoryDelivery(v1Group, categoryUseCase)
 
-	// Proudct Route
-	productRepo := productRepository.NewProductRepository(db)
-	productUseCase := productUseCase.NewProductUsecase(productRepo)
-	productDelivery.NewProductDelivery(v1Group, productUseCase)
+		// Proudct Route
+		productRepo := productRepository.NewProductRepository(db)
+		productUseCase := productUseCase.NewProductUsecase(productRepo)
+		productDelivery.NewProductDelivery(v1Group, productUseCase)
+	}
 
 }
