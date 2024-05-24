@@ -15,6 +15,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
+	"github.com/rs/zerolog/pkgerrors"
 	"gorm.io/gorm"
 )
 
@@ -33,6 +34,8 @@ func RunService() {
 	time.Local = time.FixedZone("Asia/Jakarta", 7*60*60)
 
 	// set global logger with zerolog
+	zerolog.ErrorStackMarshaler = pkgerrors.MarshalStack
+
 	// Setup output to console
 	consoleWriter := zerolog.ConsoleWriter{Out: os.Stdout}
 
@@ -60,13 +63,13 @@ func RunService() {
 	multi := zerolog.MultiLevelWriter(consoleWriter, fileWriter)
 
 	// Set logger output
-	log.Logger = log.Output(multi).With().Caller().Logger()
+	log.Logger = log.Output(multi).With().Stack().Caller().Logger()
 
 	// Filter out messages with level lower than error
 	// errorLogger := zerolog.New(multi).Level(zerolog.ErrorLevel)
 
 	// Set logger output to file for error level logs
-	// FIXME: log.Logger in line 63 will be overwrite, so in database will only show error log
+	// FIXME: log.Logger above will be overwrite, so in database will only show error log
 	// log.Logger = errorLogger
 
 	// setup config file
