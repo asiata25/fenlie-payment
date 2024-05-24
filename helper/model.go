@@ -11,8 +11,7 @@ func ToCompanyResponse(entity entity.Company) *company.CompanyResponse {
 	return &company.CompanyResponse{
 		ID:        entity.ID,
 		Name:      entity.Name,
-		Email:     entity.Email,
-		SecretKey: entity.ClientSecret,
+		SecretKey: entity.SecretKey,
 	}
 }
 

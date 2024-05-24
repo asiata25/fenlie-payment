@@ -16,7 +16,6 @@ func NewUserRepository(db *gorm.DB) user.UserRepository {
 }
 
 func (repo *userRepository) InsertUser(payload *entity.User) error {
-
 	if err := repo.db.Create(&payload).Error; err != nil {
 		return err
 	}

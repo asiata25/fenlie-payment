@@ -17,6 +17,5 @@ type (
 		UpdatedAt time.Time      `gorm:"autoUpdateTime"`
 		DeletedAt gorm.DeletedAt `gorm:"index"`
 		CompanyID string         `gorm:"column:company_id"`
-		Company   Company        `gorm:"foreignKey:CompanyID"`
 	}
 )

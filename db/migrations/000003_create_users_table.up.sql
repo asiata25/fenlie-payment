@@ -4,7 +4,7 @@ CREATE TABLE users (
     email varchar(255) NOT NULL UNIQUE,
     password TEXT NOT NULL,
     company_id uuid NOT NULL REFERENCES companies(id),
-    role varchar(255) NOT NULL,
+    role user_type,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     deleted_at TIMESTAMP NULL

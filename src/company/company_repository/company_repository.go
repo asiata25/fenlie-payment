@@ -5,7 +5,9 @@ import (
 	"finpro-fenlie/src/company"
 	"fmt"
 
+	"github.com/pkg/errors"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type companyRepository struct {
@@ -25,20 +27,22 @@ func (c *companyRepository) FindAll() ([]*entity.Company, error) {
 
 // Delete implements company.CompanyRepository.
 func (c *companyRepository) Delete(id string) error {
-	err := c.db.Delete(&entity.Company{ID: id}).Error
+	result := c.db.Select(clause.Associations).Delete(&entity.Company{ID: id})
 
-	return err
+	if result.RowsAffected < 1 {
+		return errors.New("cannot find the requested data")
+	}
+	return nil
 }
 
 // RetrieveByID implements company.CompanyRepository.
 func (c *companyRepository) RetrieveByID(id string) (*entity.Company, error) {
 	var company entity.Company
 
-	err := c.db.Where("id = $1", id).Take(&company).Error
-	if err != nil {
-		return &company, err
+	result := c.db.Where("id = $1", id).Take(&company)
+	if result.RowsAffected < 1 {
+		return &company, errors.New("cannot find the requested data")
 	}
-
 	return &company, nil
 }
 
@@ -52,8 +56,8 @@ func (c *companyRepository) Save(payload entity.Company) error {
 func (c *companyRepository) Update(payload entity.Company) error {
 	fmt.Println("SINI BANK", payload)
 	err := c.db.Debug().Model(&payload).Omit("email").Updates(map[string]interface{}{
-		"name":          payload.Name,
-		"client_secret": payload.ClientSecret,
+		"name":       payload.Name,
+		"secret_key": payload.SecretKey,
 	}).Error
 	return err
 }

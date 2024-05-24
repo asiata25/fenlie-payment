@@ -31,20 +31,37 @@ func (c *companyUseCase) GetAll() ([]*companyDTO.CompanyResponse, error) {
 
 // Create implements company.CompanyUseCase.
 func (c *companyUseCase) Create(request companyDTO.CompanyCreateRequest) error {
-	company := entity.Company{
-		Name:         request.Name,
-		Email:        request.Email,
-		ClientSecret: request.SecretKey,
+	admin := entity.User{
+		Name:     request.User.Name,
+		Email:    request.User.Email,
+		Password: request.User.Password,
+		Role:     "ADMIN",
 	}
 
-	hashedSecret, err := bcrypt.GenerateFromPassword([]byte(company.ClientSecret), bcrypt.DefaultCost)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(admin.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return err
 	}
 
-	company.ClientSecret = string(hashedSecret)
+	admin.Password = string(hashedPassword)
+
+	company := entity.Company{
+		Name:      request.Name,
+		SecretKey: request.SecretKey,
+		Users: []entity.User{
+			admin,
+		},
+	}
+
+	hashedSecret, err := bcrypt.GenerateFromPassword([]byte(company.SecretKey), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+
+	company.SecretKey = string(hashedSecret)
 
 	error := c.repository.Save(company)
+
 	return error
 }
 
@@ -57,7 +74,7 @@ func (c *companyUseCase) Delete(id string) error {
 // GetById implements company.CompanyUseCase.
 func (c *companyUseCase) GetById(id string) (*companyDTO.CompanyResponse, error) {
 	company, err := c.repository.RetrieveByID(id)
-	if err = helper.CheckErrNotFound(err); err != nil {
+	if err != nil {
 		return &companyDTO.CompanyResponse{}, err
 	}
 
@@ -72,7 +89,7 @@ func (c *companyUseCase) Update(request companyDTO.CompanyUpdateRequest) error {
 	}
 
 	if request.SecretKey == "" {
-		request.SecretKey = companyExisting.ClientSecret
+		request.SecretKey = companyExisting.SecretKey
 	} else {
 		hashedSecret, err := bcrypt.GenerateFromPassword([]byte(request.SecretKey), bcrypt.DefaultCost)
 		if err != nil {
@@ -83,9 +100,9 @@ func (c *companyUseCase) Update(request companyDTO.CompanyUpdateRequest) error {
 	}
 
 	company := entity.Company{
-		ID:           request.ID,
-		Name:         request.Name,
-		ClientSecret: request.SecretKey,
+		ID:        request.ID,
+		Name:      request.Name,
+		SecretKey: request.SecretKey,
 	}
 
 	err = c.repository.Update(company)

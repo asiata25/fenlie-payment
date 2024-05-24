@@ -48,7 +48,7 @@ func InitEnv() (*dto.ConfigData, error) {
 
 	if dbHost == "" || dbPort == "" || dbUser == "" || dbPass == "" || dbName == "" ||
 		dbMaxIdle == "" || dbMaxConn == "" || dbMaxLifetime == "" || logMode == "" || dbLogLevel == "" || clientId == "" || clientSecret == "" {
-		return &configData, errors.New("DB Config is properly set")
+		return &configData, errors.New("DB Config is not properly set")
 	}
 
 	var err error

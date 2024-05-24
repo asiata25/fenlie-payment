@@ -5,7 +5,6 @@ import (
 	"finpro-fenlie/pkg/validation"
 	"finpro-fenlie/router"
 	"os"
-	"path/filepath"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -40,27 +39,28 @@ func RunService() {
 	consoleWriter := zerolog.ConsoleWriter{Out: os.Stdout}
 
 	// Setup output to file
-	logPath := "log"
-	logFileName := time.Now().Format("2006-01-02") + ".log"
-	logFilePath := filepath.Join(logPath, logFileName)
+	// logPath := "log"
+	// FIXME: log file will be created only once when the first time app running
+	// logFileName := time.Now().Format("2006-01-02") + ".log"
+	// logFilePath := filepath.Join(logPath, logFileName)
 
 	// Create log directory if not exists
-	if _, err := os.Stat(logPath); os.IsNotExist(err) {
-		os.Mkdir(logPath, os.ModePerm)
-	}
+	// if _, err := os.Stat(logPath); os.IsNotExist(err) {
+	// 	os.Mkdir(logPath, os.ModePerm)
+	// }
 
 	// Open log file
-	logFile, err := os.OpenFile(logFilePath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
-	if err != nil {
-		log.Fatal().Err(err).Msg("Failed to open log file")
-	}
-	defer logFile.Close()
+	// logFile, err := os.OpenFile(logFilePath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	// if err != nil {
+	// 	log.Fatal().Err(err).Msg("Failed to open log file")
+	// }
+	// defer logFile.Close()
 
 	// Setup output to file
-	fileWriter := zerolog.ConsoleWriter{Out: logFile}
+	// fileWriter := zerolog.ConsoleWriter{Out: logFile}
 
 	// Combine console and file output
-	multi := zerolog.MultiLevelWriter(consoleWriter, fileWriter)
+	multi := zerolog.MultiLevelWriter(consoleWriter)
 
 	// Set logger output
 	log.Logger = log.Output(multi).With().Stack().Caller().Logger()
@@ -75,7 +75,7 @@ func RunService() {
 	// setup config file
 	configData, err := config.InitEnv()
 	if err != nil {
-		log.Error().Err(err).Msg("Failed to load config .env")
+		log.Error().Err(err).Msg("failed to load config .env")
 		return
 	}
 	log.Info().Object("config", configData).Msg("Success load " + os.Getenv("MODE") + ".env")
@@ -111,7 +111,7 @@ func RunService() {
 
 	defer func() {
 		if err := sqlDB.Close(); err != nil {
-			log.Error().Err(err).Msg("Failed to close DB")
+			log.Error().Err(err).Msg("failed to close DB")
 		}
 	}()
 
@@ -149,10 +149,10 @@ func RunService() {
 	initializeDomainModule(r, conn)
 
 	version := configData.Version
-	log.Info().Msgf("Service running version: %s", version)
+	log.Info().Msgf("service running version: %s", version)
 	port := configData.AppConfig.Port
 	err = r.Run(port)
 	if err != nil {
-		log.Panic().Err(err).Msgf("Failed to run service on port %s", port)
+		log.Panic().Err(err).Msgf("failed to run service on port %s", port)
 	}
 }

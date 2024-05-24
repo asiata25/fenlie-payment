@@ -4,6 +4,7 @@ import (
 	"finpro-fenlie/model/dto"
 	"fmt"
 
+	"github.com/pkg/errors"
 	"github.com/rs/zerolog"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -33,6 +34,7 @@ func ConnectDB(in *dto.ConfigData, log zerolog.Logger) (*gorm.DB, error) {
 	// GORM automatically ping database after initialized to check database availability
 
 	if err != nil {
+		err = errors.New(err.Error())
 		log.Error().Err(err).Msg("Failed to open database connection")
 		return nil, err
 	}
