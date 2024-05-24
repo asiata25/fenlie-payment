@@ -14,6 +14,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
+	"github.com/rs/zerolog/pkgerrors"
 	"gorm.io/gorm"
 )
 
@@ -32,7 +33,8 @@ func RunService() {
 	time.Local = time.FixedZone("Asia/Jakarta", 7*60*60)
 
 	// set global logger with zerolog
-	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stdout}).With().Caller().Logger()
+	zerolog.ErrorStackMarshaler = pkgerrors.MarshalStack
+	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stdout}).With().Stack().Caller().Logger()
 
 	// setup config file
 	configData, err := config.InitEnv()
