@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS transactions (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
-  status bool NOT NULL,
+  status payment_type,
   total int NOT NULL,
   company_id uuid REFERENCES companies(id) NOT NULL,
   user_id uuid REFERENCES companies(id) NOT NULL,

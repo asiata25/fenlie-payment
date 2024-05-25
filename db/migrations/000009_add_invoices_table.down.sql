@@ -1,1 +1,1 @@
-DROP TABLE IF NOT EXISTS invoices
+DROP TABLE IF EXISTS invoices
