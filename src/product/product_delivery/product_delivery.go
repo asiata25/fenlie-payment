@@ -3,6 +3,7 @@ package productDelivery
 import (
 	"finpro-fenlie/model/dto/json"
 	productDTO "finpro-fenlie/model/dto/product"
+	"finpro-fenlie/pkg/middleware"
 	"finpro-fenlie/pkg/validation"
 	"finpro-fenlie/src/product"
 	"strconv"
@@ -19,6 +20,7 @@ func NewProductDelivery(v1Group *gin.RouterGroup, productUC product.ProductUseca
 		productUC: productUC,
 	}
 	productGroup := v1Group.Group("products")
+	productGroup.Use(middleware.JWTAuth("ADMIN", "EMPLOYEE"))
 	{
 		productGroup.GET("", handler.GetAllProducts)
 		productGroup.POST("", handler.CreateProduct)
@@ -29,10 +31,21 @@ func NewProductDelivery(v1Group *gin.RouterGroup, productUC product.ProductUseca
 }
 
 func (c *productDelivery) GetAllProducts(ctx *gin.Context) {
-	page, _ := strconv.Atoi(ctx.DefaultQuery("page", "1"))
-	pageSize, _ := strconv.Atoi(ctx.DefaultQuery("pageSize", "10"))
+	page, err := strconv.Atoi(ctx.DefaultQuery("page", "1"))
+	if err != nil {
+		json.NewResponseError(ctx, err.Error())
+		return
+	}
 
-	products, _, _, totalItems, err := c.productUC.GetAllProducts(page, pageSize)
+	pageSize, err := strconv.Atoi(ctx.DefaultQuery("pageSize", "10"))
+	if err != nil {
+		json.NewResponseError(ctx, err.Error())
+		return
+	}
+
+	name := ctx.Query("name")
+	companyId := ctx.GetHeader("companyId")
+	products, totalItems, err := c.productUC.GetAllProducts(page, pageSize, name, companyId)
 	if err != nil {
 		json.NewResponseError(ctx, err.Error())
 		return
@@ -42,7 +55,7 @@ func (c *productDelivery) GetAllProducts(ctx *gin.Context) {
 }
 
 func (c *productDelivery) CreateProduct(ctx *gin.Context) {
-	var product productDTO.ProductRequest
+	var product productDTO.ProductCreateRequest
 
 	if err := ctx.ShouldBindJSON(&product); err != nil {
 		validationError := validation.GetValidationError(err)
@@ -51,6 +64,8 @@ func (c *productDelivery) CreateProduct(ctx *gin.Context) {
 			return
 		}
 	}
+	companyId := ctx.GetHeader("companyId")
+	product.CompanyID = companyId
 
 	err := c.productUC.CreateProduct(product)
 	if err != nil {
@@ -63,18 +78,22 @@ func (c *productDelivery) CreateProduct(ctx *gin.Context) {
 
 func (c *productDelivery) GetProduct(ctx *gin.Context) {
 	id := ctx.Param("id")
-	getProduct, err := c.productUC.GetProduct(id)
+	companyId := ctx.GetHeader("companyId")
+	getProduct, err := c.productUC.GetProduct(id, companyId)
 	if err != nil {
 		json.NewResponseError(ctx, err.Error())
 		return
 	}
 
-	json.NewResponseSuccess(ctx, getProduct, "uccess create product")
+	json.NewResponseSuccess(ctx, getProduct, "OK")
 }
 
 func (c *productDelivery) UpdateProduct(ctx *gin.Context) {
 	id := ctx.Param("id")
-	var product productDTO.ProductRequest
+	companyId := ctx.GetHeader("companyId")
+	var product productDTO.ProductUpdateRequest
+	product.ID = id
+	product.CompanyID = companyId
 
 	if err := ctx.ShouldBindJSON(&product); err != nil {
 		validationError := validation.GetValidationError(err)
@@ -84,25 +103,20 @@ func (c *productDelivery) UpdateProduct(ctx *gin.Context) {
 		}
 	}
 
-	err := c.productUC.UpdateProduct(id, product)
+	err := c.productUC.UpdateProduct(product)
 	if err != nil {
 		json.NewResponseError(ctx, err.Error())
 		return
 	}
 
-	result, err := c.productUC.GetProduct(id)
-	if err != nil {
-		json.NewResponseError(ctx, err.Error())
-		return
-	}
-
-	json.NewResponseSuccess(ctx, result, "Success Update Product")
+	json.NewResponseSuccess(ctx, nil, "Success Update Product")
 }
 
 func (c *productDelivery) DeleteProduct(ctx *gin.Context) {
 	id := ctx.Param("id")
+	companyId := ctx.GetHeader("companyId")
 
-	err := c.productUC.DeleteProduct(id)
+	err := c.productUC.DeleteProduct(id, companyId)
 	if err != nil {
 		json.NewResponseError(ctx, err.Error())
 		return

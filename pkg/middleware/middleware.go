@@ -4,33 +4,49 @@ import (
 	"finpro-fenlie/helper"
 	"finpro-fenlie/model/dto/auth"
 	jsonDTO "finpro-fenlie/model/dto/json"
-	"finpro-fenlie/model/dto/user"
-	"os"
+	"finpro-fenlie/src/company"
 	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
+	"golang.org/x/crypto/bcrypt"
 )
 
-func BasicAuth(c *gin.Context) {
-	user, password, ok := c.Request.BasicAuth()
-	if !ok {
-		jsonDTO.NewResponseUnauthorized(c, "unauthorized")
-		return
-	}
+func BasicAuth(companyUseCase company.CompanyUseCase) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		companyId, companySecret, ok := c.Request.BasicAuth()
 
-	if user != os.Getenv("CLIENT_ID") || password != os.Getenv("CLIENT_SECRET") {
-		jsonDTO.NewResponseUnauthorized(c, "unauthorized")
-		return
+		if !ok {
+			jsonDTO.NewResponseUnauthorized(c, "unauthorized")
+			c.Abort()
+			return
+		}
+
+		company, err := companyUseCase.GetById(companyId)
+		if err != nil {
+			jsonDTO.NewResponseUnauthorized(c, err.Error())
+			c.Abort()
+			return
+		}
+
+		if err := bcrypt.CompareHashAndPassword([]byte(company.SecretKey), []byte(companySecret)); err != nil {
+			jsonDTO.NewResponseUnauthorized(c, "unauthorized")
+			c.Abort()
+			return
+		}
+
+		c.Request.Header.Add("companyId", companyId)
+
+		c.Next()
 	}
-	c.Next()
 }
 
 func JWTAuth(roles ...string) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		authHeader := c.GetHeader("Authorization")
+		authHeader := c.GetHeader("accessToken")
 		if !strings.Contains(authHeader, "Bearer") {
 			jsonDTO.NewResponseUnauthorized(c, "invalid token")
+			c.Abort()
 			return
 		}
 
@@ -41,10 +57,12 @@ func JWTAuth(roles ...string) gin.HandlerFunc {
 		})
 		if err != nil {
 			jsonDTO.NewResponseUnauthorized(c, "invalid token")
+			c.Abort()
 			return
 		}
 		if !token.Valid {
 			jsonDTO.NewResponseForbidden(c, "forbidden")
+			c.Abort()
 			return
 		}
 
@@ -52,7 +70,7 @@ func JWTAuth(roles ...string) gin.HandlerFunc {
 		validRole := false
 		if len(roles) > 0 {
 			for _, role := range roles {
-				if role == claims.Roles {
+				if role == claims.Role {
 					validRole = true
 					break
 				}
@@ -60,15 +78,16 @@ func JWTAuth(roles ...string) gin.HandlerFunc {
 		}
 		if !validRole {
 			jsonDTO.NewResponseForbidden(c, "forbidden")
+			c.Abort()
 			return
 		}
 
-		userInfo := &user.UserResponse{
-			Email:     claims.Username,
-			CompanyID: claims.CompanyID,
-			Roles:     claims.Roles,
-		}
-		c.Set("userInfo", userInfo)
+		c.Request.Header.Add("userId", claims.UserId)
+		// userInfo := &user.UserJWT{
+		// 	ID: claims.ID,
+		// 	Role:  claims.Role,
+		// }
+		// c.Set("userInfo", userInfo)
 
 		c.Next()
 	}

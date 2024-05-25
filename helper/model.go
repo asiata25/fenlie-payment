@@ -4,6 +4,7 @@ import (
 	"finpro-fenlie/model/dto/category"
 	"finpro-fenlie/model/dto/company"
 	"finpro-fenlie/model/dto/product"
+	"finpro-fenlie/model/dto/user"
 	"finpro-fenlie/model/entity"
 )
 
@@ -11,8 +12,7 @@ func ToCompanyResponse(entity entity.Company) *company.CompanyResponse {
 	return &company.CompanyResponse{
 		ID:        entity.ID,
 		Name:      entity.Name,
-		Email:     entity.Email,
-		SecretKey: entity.ClientSecret,
+		SecretKey: entity.SecretKey,
 	}
 }
 
@@ -28,8 +28,19 @@ func ToProductResponse(entity entity.Product) product.ProductResponse {
 		ID:          entity.ID,
 		Name:        entity.Name,
 		Price:       entity.Price,
-		Description: entity.Description,
+		Description: entity.Description.String,
 		Status:      entity.Status,
-		// Category: ,
+		Category:    entity.Category.Name,
+	}
+}
+
+func ToUserResponse(entity entity.User) user.UserResponse {
+	return user.UserResponse{
+		ID:       entity.ID,
+		Name:     entity.Name,
+		Email:    entity.Email,
+		Password: entity.Password,
+		Role:     entity.Role,
+		Company:  "",
 	}
 }

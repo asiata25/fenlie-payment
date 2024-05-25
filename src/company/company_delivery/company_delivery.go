@@ -1,6 +1,7 @@
 package companyDelivery
 
 import (
+	"finpro-fenlie/helper"
 	companyDTO "finpro-fenlie/model/dto/company"
 	jsonDTO "finpro-fenlie/model/dto/json"
 	"finpro-fenlie/pkg/validation"
@@ -19,6 +20,11 @@ func (c *companyDelivery) getById(ctx *gin.Context) {
 
 	company, err := c.useCase.GetById(companyId)
 	if err != nil {
+		if err := helper.CheckErrNotFound(err); err != nil {
+			jsonDTO.NewResponseSuccess(ctx, nil, err.Error())
+			return
+		}
+
 		jsonDTO.NewResponseError(ctx, err.Error())
 		return
 	}

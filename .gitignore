@@ -111,3 +111,4 @@ $RECYCLE.BIN/
 .env
 *.env
 !sample.env
+log/

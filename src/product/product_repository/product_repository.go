@@ -1,9 +1,11 @@
 package productRepository
 
 import (
+	"finpro-fenlie/helper"
 	"finpro-fenlie/model/entity"
 	"finpro-fenlie/src/product"
 
+	"github.com/pkg/errors"
 	"gorm.io/gorm"
 )
 
@@ -15,41 +17,37 @@ func NewProductRepository(db *gorm.DB) product.ProductRepository {
 	return &productRepository{db}
 }
 
-func (repo *productRepository) GetAllProducts(page, pageSize int) ([]entity.Product, int64, error) {
+func (repo *productRepository) GetAllProducts(page, pageSize int, name, companyId string) ([]entity.Product, int, error) {
 	var products []entity.Product
 	var totalItems int64
 
-	offset := (page - 1) * pageSize
-	if err := repo.db.Model(&entity.Product{}).Count(&totalItems).Error; err != nil {
+	if err := repo.db.Model(&entity.Product{}).Scopes(helper.FindBasedOnCompany(companyId), helper.Paginate(page, pageSize)).Where("products.name LIKE $1", "%"+name+"%").Count(&totalItems).Joins("Category", repo.db.Select("Category.name")).Find(&products).Error; err != nil {
 		return nil, 0, err
 	}
 
-	if err := repo.db.Offset(offset).Limit(pageSize).Find(&products).Error; err != nil {
-		return nil, 0, err
-	}
-
-	return products, totalItems, nil
+	return products, int(totalItems), nil
 }
 
-func (repo *productRepository) InsertProduct(product entity.Product) (entity.Product, error) {
+func (repo *productRepository) InsertProduct(product entity.Product) error {
 	if err := repo.db.Create(&product).Error; err != nil {
-		return entity.Product{}, err
+		return err
 	}
-	return product, nil
+	return nil
 
 }
 
-func (repo *productRepository) GetById(id string) (entity.Product, error) {
+func (repo *productRepository) GetById(id, companyId string) (entity.Product, error) {
 	var product entity.Product
-	if err := repo.db.First(&product, "id = ?", id).Error; err != nil {
+	if err := repo.db.Scopes(helper.FindBasedOnCompany(companyId)).Joins("Category", repo.db.Select("Category.name")).First(&product, "products.id = ?", id).Error; err != nil {
 		return entity.Product{}, err
 	}
 
 	return product, nil
 }
 
-func (repo *productRepository) UpdateProduct(id string, product entity.Product) error {
-	err := repo.db.Model(&product).Where("id = ?", id).Updates(product).Error
+func (repo *productRepository) UpdateProduct(product entity.Product) error {
+	// TODO: Updates using map for allowing zero value
+	err := repo.db.Model(&product).Scopes(helper.FindBasedOnCompany(product.CompanyID)).Omit("id", "company_id").Updates(product).Error
 	if err != nil {
 		return err
 	}
@@ -57,11 +55,10 @@ func (repo *productRepository) UpdateProduct(id string, product entity.Product) 
 	return nil
 }
 
-func (repo *productRepository) SoftDeleteProduct(id string) error {
-	var product entity.Product
-
-	if err := repo.db.Where("id = ?", id).Delete(&product).Error; err != nil {
-		return err
+func (repo *productRepository) DeleteProduct(id, companyId string) error {
+	result := repo.db.Scopes(helper.FindBasedOnCompany(companyId)).Delete(&entity.Product{ID: id})
+	if result.RowsAffected < 1 {
+		return errors.New("cannot find the requested data")
 	}
 
 	return nil

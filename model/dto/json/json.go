@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 )
 
@@ -71,7 +72,8 @@ func NewResponseBadRequest(c *gin.Context, validationField []ValidationField, me
 }
 
 func NewResponseError(c *gin.Context, err string) {
-	log.Error().Msg(err)
+	errResp := errors.New(err)
+	log.Error().Err(errResp).Msg(err)
 
 	c.JSON(http.StatusInternalServerError, jsonErrorResponse{
 		Code:    "500",

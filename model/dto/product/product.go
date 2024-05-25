@@ -1,11 +1,22 @@
 package product
 
-type ProductRequest struct {
+type ProductCreateRequest struct {
 	Name        string `json:"name" binding:"required"`
-	Price       int    `json:"price" binding:"required,num"`
+	Price       int    `json:"price" binding:"required,number"`
 	Description string `json:"description"`
 	Status      bool   `json:"status" binding:"required,boolean"`
 	CategoryID  string `json:"category_id,omitempty"`
+	CompanyID   string `json:"company_id"`
+}
+
+type ProductUpdateRequest struct {
+	ID          string `json:"id"`
+	Name        string `json:"name" binding:"required"`
+	Price       int    `json:"price" binding:"required,number"`
+	Description string `json:"description,omitempty"`
+	Status      bool   `json:"status" binding:"required,boolean"`
+	CategoryID  string `json:"category_id,omitempty"`
+	CompanyID   string `json:"company_id"`
 }
 
 type ProductResponse struct {
