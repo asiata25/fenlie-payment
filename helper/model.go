@@ -28,8 +28,9 @@ func ToProductResponse(entity entity.Product) product.ProductResponse {
 		ID:          entity.ID,
 		Name:        entity.Name,
 		Price:       entity.Price,
-		Description: entity.Description,
+		Description: entity.Description.String,
 		Status:      entity.Status,
+		Category:    entity.Category.Name,
 	}
 }
 

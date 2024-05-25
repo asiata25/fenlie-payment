@@ -4,7 +4,6 @@ import (
 	"finpro-fenlie/helper"
 	"finpro-fenlie/model/entity"
 	"finpro-fenlie/src/user"
-	"fmt"
 
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
@@ -46,7 +45,6 @@ func (repo *userRepository) EditUser(payload *entity.User) error {
 }
 
 func (repo *userRepository) RemoveUser(id, companyId string) error {
-	fmt.Println("IDDDDD", id)
 	result := repo.db.Scopes(helper.FindBasedOnCompany(companyId)).Delete(&entity.User{ID: id})
 	if result.RowsAffected < 1 {
 		return errors.New("cannot find the requested data")

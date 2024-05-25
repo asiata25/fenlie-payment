@@ -6,17 +6,17 @@ import (
 )
 
 type ProductRepository interface {
-	GetAllProducts(page, pageSize int) ([]entity.Product, int64, error)
+	GetAllProducts(page, pageSize int, name, companyId string) ([]entity.Product, int, error)
 	InsertProduct(product entity.Product) error
-	GetById(id string) (entity.Product, error)
-	UpdateProduct(id string, product entity.Product) error
-	SoftDeleteProduct(id string) error
+	GetById(id, companyId string) (entity.Product, error)
+	UpdateProduct(product entity.Product) error
+	DeleteProduct(id, companyId string) error
 }
 
 type ProductUsecase interface {
-	GetAllProducts(page, pageSize int) ([]product.ProductResponse, int, int64, int64, error)
-	CreateProduct(product product.ProductRequest) error
-	GetProduct(id string) (product.ProductResponse, error)
-	UpdateProduct(id string, product product.ProductRequest) error
-	DeleteProduct(id string) error
+	GetAllProducts(page, pageSize int, name, companyId string) ([]product.ProductResponse, int, error)
+	CreateProduct(request product.ProductCreateRequest) error
+	GetProduct(id, companyId string) (product.ProductResponse, error)
+	UpdateProduct(request product.ProductUpdateRequest) error
+	DeleteProduct(id, companyId string) error
 }
