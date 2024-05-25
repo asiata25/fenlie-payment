@@ -1,0 +1,1 @@
+CREATE TYPE payment_type AS ENUM ('unpaid', 'cancelled', 'paid', 'complete');
