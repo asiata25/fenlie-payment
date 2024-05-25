@@ -11,6 +11,9 @@ import (
 	productDelivery "finpro-fenlie/src/product/product_delivery"
 	productRepository "finpro-fenlie/src/product/product_repository"
 	productUseCase "finpro-fenlie/src/product/product_use_case"
+	userDelivery "finpro-fenlie/src/user/user_delivery"
+	userRepository "finpro-fenlie/src/user/user_repository"
+	userUseCase "finpro-fenlie/src/user/user_use_case"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -25,6 +28,11 @@ func InitRouter(v1Group *gin.RouterGroup, db *gorm.DB) {
 
 	v1Group.Use(middleware.BasicAuth(companyUseCase))
 	{
+		// User Route
+		userRepository := userRepository.NewUserRepository(db)
+		userUseCase := userUseCase.NewUserUsecase(userRepository)
+		userDelivery.NewUserDelivery(v1Group, userUseCase)
+
 		// Category Route
 		categoryRepo := categoryRepository.NewCategoryRepository(db)
 		categoryUseCase := categoryUseCase.NewCategoryUseCase(categoryRepo)

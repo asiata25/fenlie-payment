@@ -13,15 +13,14 @@ var (
 	JwtSignatureKey  = []byte("finpro-fenlie")
 )
 
-func GenerateTokenJwt(username, role, companyID string, expiredAt int64) (string, error) {
+func GenerateTokenJwt(userId, role string, expiredAt int64) (string, error) {
 	claims := auth.JwtClaim{
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Duration(expiredAt) * time.Minute)),
 			Issuer:    applicationName,
 		},
-		CompanyID: companyID,
-		Username:  username,
-		Role:      role,
+		UserId: userId,
+		Role:   role,
 	}
 
 	token := jwt.NewWithClaims(

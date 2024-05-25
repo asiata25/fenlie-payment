@@ -3,7 +3,6 @@ package companyRepository
 import (
 	"finpro-fenlie/model/entity"
 	"finpro-fenlie/src/company"
-	"fmt"
 
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
@@ -54,7 +53,6 @@ func (c *companyRepository) Save(payload entity.Company) error {
 
 // Update implements company.CompanyRepository.
 func (c *companyRepository) Update(payload entity.Company) error {
-	fmt.Println("SINI BANK", payload)
 	err := c.db.Debug().Model(&payload).Omit("email").Updates(map[string]interface{}{
 		"name":       payload.Name,
 		"secret_key": payload.SecretKey,

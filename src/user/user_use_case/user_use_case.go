@@ -20,17 +20,17 @@ func NewUserUsecase(userRepo user.UserRepository) user.UserUseCase {
 
 // Implement Login
 func (usecase *userUC) Login(request userDTO.LoginRequest) (string, error) {
-	user, err := usecase.userRepo.RetrieveUserByEmail(request.Email)
+	user, err := usecase.userRepo.RetrieveUserByEmail(request.Email, request.CompanyID)
 	if err != nil {
-		return "err", err
+		return "", err
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(request.Password))
 	if err != nil {
-		return "", errors.New("invalid Password")
+		return "", errors.New("invalid password")
 	}
 
-	token, err := helper.GenerateTokenJwt(user.Email, user.Role, user.CompanyID, 10)
+	token, err := helper.GenerateTokenJwt(user.ID, user.Role, 10)
 	if err != nil {
 		return "", err
 	}
@@ -40,7 +40,7 @@ func (usecase *userUC) Login(request userDTO.LoginRequest) (string, error) {
 
 // Implement CreateUser
 func (usecase *userUC) CreateUser(request userDTO.CreateUserRequest) error {
-	_, err := usecase.userRepo.RetrieveUserByEmail(request.Email)
+	_, err := usecase.userRepo.RetrieveUserByEmail(request.Email, request.CompanyID)
 	if err == nil {
 		return errors.New("email is already exists")
 	}
@@ -51,10 +51,11 @@ func (usecase *userUC) CreateUser(request userDTO.CreateUserRequest) error {
 	}
 
 	user := entity.User{
-		Name:     request.Name,
-		Email:    request.Email,
-		Role:     request.Role,
-		Password: string(hash),
+		Name:      request.Name,
+		Email:     request.Email,
+		Role:      request.Role,
+		Password:  string(hash),
+		CompanyID: request.CompanyID,
 	}
 
 	err = usecase.userRepo.InsertUser(&user)
@@ -65,63 +66,72 @@ func (usecase *userUC) CreateUser(request userDTO.CreateUserRequest) error {
 	return nil
 }
 
-// // Implement GetUser
-// func (usecase *userUC) GetAllUser(c *gin.Context, page, size int, email, name string) (userDTO.GetResponse, error) {
-// 	userInfo, err := middleware.GetUserInfo(c)
-// 	if err != nil {
-// 		return userDTO.GetResponse{}, err
-// 	}
+// Implement GetUser
+func (usecase *userUC) GetAllUser(page, size int, email, name, companyId string) ([]userDTO.UserResponse, int, error) {
+	var users []userDTO.UserResponse
+	response, total, err := usecase.userRepo.RetrieveAllUser(page, size, email, name, companyId)
 
-// 	totalData, err := usecase.userRepo.CountUsers(email, name, userInfo)
-// 	if err != nil {
-// 		return userDTO.GetResponse{}, err
-// 	}
+	for i, resp := range response {
+		users = append(users, helper.ToUserResponse(resp))
+		users[i].Company = resp.Company.Name
+	}
 
-// 	response, err := usecase.userRepo.RetrieveAllUser(page, size, totalData, email, name, userInfo)
-// 	if err != nil {
-// 		return response, err
-// 	}
-// 	return response, nil
-// }
+	if err != nil {
+		return users, total, err
+	}
 
-// // Implement GetUserByID
-// func (usecase *userUC) GetUserByID(c *gin.Context, id string) (userDTO.User, error) {
-// 	userInfo, err := middleware.GetUserInfo(c)
-// 	if err != nil {
-// 		return userDTO.User{}, err
-// 	}
+	return users, total, nil
+}
 
-// 	user, err := usecase.userRepo.RetrieveUserByID(id, userInfo)
-// 	if err != nil {
-// 		return user, err
-// 	}
-// 	return user, nil
-// }
+// Implement GetUserByID
+func (usecase *userUC) GetUserByID(id, companyId string) (userDTO.UserResponse, error) {
 
-// // Implement UpdateUser
-// func (usecase *userUC) UpdateUser(c *gin.Context, id string, userUpdates map[string]interface{}) error {
-// 	userInfo, err := middleware.GetUserInfo(c)
-// 	if err != nil {
-// 		return err
-// 	}
+	result, err := usecase.userRepo.RetrieveUserByID(id, companyId)
+	if err != nil {
+		return userDTO.UserResponse{}, err
+	}
 
-// 	err = usecase.userRepo.EditUser(id, userUpdates, userInfo)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	return nil
-// }
+	user := helper.ToUserResponse(result)
+	user.Company = result.Company.Name
 
-// // Implement DeleteUser
-// func (usecase *userUC) DeleteUser(c *gin.Context, id string) error {
-// 	userInfo, err := middleware.GetUserInfo(c)
-// 	if err != nil {
-// 		return err
-// 	}
+	return user, nil
+}
 
-// 	err = usecase.userRepo.RemoveUser(id, userInfo)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	return nil
-// }
+// Implement UpdateUser
+func (usecase *userUC) UpdateUser(request userDTO.UpdateUserRequest) error {
+	user := entity.User{
+		ID:        request.ID,
+		Name:      request.Name,
+		Role:      request.Role,
+		CompanyID: request.CompanyID,
+		Password:  request.Password,
+	}
+
+	userExisting, err := usecase.userRepo.RetrieveUserByID(user.ID, user.CompanyID)
+	if err != nil {
+		return err
+	}
+
+	if request.Password == "" {
+		request.Password = userExisting.Password
+	} else {
+		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+		if err != nil {
+			return err
+		}
+
+		user.Password = string(hashedPassword)
+	}
+
+	err = usecase.userRepo.EditUser(&user)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// Implement DeleteUser
+func (usecase *userUC) DeleteUser(id, companyId string) error {
+	err := usecase.userRepo.RemoveUser(id, companyId)
+	return err
+}
