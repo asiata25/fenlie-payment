@@ -11,6 +11,9 @@ import (
 	productDelivery "finpro-fenlie/src/product/product_delivery"
 	productRepository "finpro-fenlie/src/product/product_repository"
 	productUseCase "finpro-fenlie/src/product/product_use_case"
+	transactionDelivery "finpro-fenlie/src/transaction/transaction_delivery"
+	transactionRepository "finpro-fenlie/src/transaction/transaction_repository"
+	transactionUseCase "finpro-fenlie/src/transaction/transaction_use_case"
 	userDelivery "finpro-fenlie/src/user/user_delivery"
 	userRepository "finpro-fenlie/src/user/user_repository"
 	userUseCase "finpro-fenlie/src/user/user_use_case"
@@ -42,6 +45,11 @@ func InitRouter(v1Group *gin.RouterGroup, db *gorm.DB) {
 		productRepo := productRepository.NewProductRepository(db)
 		productUseCase := productUseCase.NewProductUsecase(productRepo)
 		productDelivery.NewProductDelivery(v1Group, productUseCase)
+
+		// Transaction Route
+		transactionRepo := transactionRepository.NewTransactionRepository(db)
+		transactionUseCase := transactionUseCase.NewTransactionUsecase(transactionRepo)
+		transactionDelivery.NewTransactionDelivery(v1Group, transactionUseCase)
 	}
 
 }
