@@ -1,11 +1,11 @@
 package categoryRepository
 
 import (
-	"errors"
+	"finpro-fenlie/helper"
 	"finpro-fenlie/model/entity"
 	"finpro-fenlie/src/category"
-	"time"
 
+	"github.com/pkg/errors"
 	"gorm.io/gorm"
 )
 
@@ -15,7 +15,7 @@ type categoryRepository struct {
 
 // Save implements category.categoryRepository.
 func (repo *categoryRepository) Save(category *entity.Category) error {
-	err := repo.db.Debug().Create(&category).Error
+	err := repo.db.Create(&category).Error
 	if err != nil {
 		return err
 	}
@@ -24,21 +24,16 @@ func (repo *categoryRepository) Save(category *entity.Category) error {
 }
 
 // GetAll implements category.categoryRepository.
-func (repo *categoryRepository) GetAll(page, size int) (*[]entity.Category, int64, error) {
+func (repo *categoryRepository) GetAll(page, size int, name, companyId string) (*[]entity.Category, int64, error) {
 	var categories []entity.Category
 	var total int64
 
-	offset := (page - 1) * size
-
-	err := repo.db.Model(&entity.Category{}).Where("deleted_at IS NULL").Count(&total).Error
+	err := repo.db.Model(&entity.Category{}).Scopes(helper.FindBasedOnCompany(companyId), helper.Paginate(page, size)).Where("name LIKE $1", "%"+name+"%").Find(&categories).Error
 	if err != nil {
 		return nil, 0, err
 	}
 
-	err = repo.db.Where("deleted_at IS NULL").
-		Limit(size).
-		Offset(offset).
-		Find(&categories).Error
+	err = repo.db.Model(&entity.Category{}).Where("name LIKE $1", "%"+name+"%").Count(&total).Error
 	if err != nil {
 		return nil, 0, err
 	}
@@ -47,14 +42,10 @@ func (repo *categoryRepository) GetAll(page, size int) (*[]entity.Category, int6
 }
 
 // GetById implements category.categoryRepository.
-func (repo *categoryRepository) GetById(id string) (entity.Category, error) {
+func (repo *categoryRepository) GetById(id, companyId string) (entity.Category, error) {
 	var category entity.Category
-	result := repo.db.Where("id = $1", id).Take(&category)
+	result := repo.db.Scopes(helper.FindBasedOnCompany(companyId)).Where("id = $1", id).Take(&category)
 	if result.Error != nil {
-		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-			return category, errors.New("category not found")
-
-		}
 		return category, result.Error
 	}
 
@@ -63,16 +54,18 @@ func (repo *categoryRepository) GetById(id string) (entity.Category, error) {
 
 // Update implements category.categoryRepository.
 func (repo *categoryRepository) Update(category *entity.Category) error {
-	err := repo.db.Model(category).Where("id = ?", category.ID).Updates(category).Error
+	err := repo.db.Model(category).Scopes(helper.FindBasedOnCompany(category.CompanyID)).Omit("id", "company_id").Where("id = ?", category.ID).Updates(category).Error
 	return err
 }
 
 // Delete implements category.categoryRepository.
-func (repo *categoryRepository) Delete(id string) error {
-	currentTime := time.Now()
-	err := repo.db.Model(&entity.Category{}).Where("id = ?", id).Update("DeletedAt", currentTime).Error
+func (repo *categoryRepository) Delete(id, companyId string) error {
+	result := repo.db.Scopes(helper.FindBasedOnCompany(companyId)).Delete(&entity.Category{ID: id})
+	if result.RowsAffected < 1 {
+		return errors.New("cannot find the requested data")
+	}
 
-	return err
+	return nil
 }
 
 func NewCategoryRepository(db *gorm.DB) category.CategoryRepository {

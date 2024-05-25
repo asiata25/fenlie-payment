@@ -5,46 +5,28 @@ import (
 	categoryDto "finpro-fenlie/model/dto/category"
 	"finpro-fenlie/model/entity"
 	"finpro-fenlie/src/category"
-	"strconv"
 )
 
 type categoryUseCase struct {
 	repository category.CategoryRepository
 }
 
-// CreateLoan implements category.CategoryUseCase.
-func (uc *categoryUseCase) CreateLoan(request *categoryDto.CategoryRequest) error {
-
+// Create implements category.CategoryUseCase.
+func (uc *categoryUseCase) Create(request *categoryDto.CategoryRequest) error {
 	category := entity.Category{
-		Name: request.Name,
+		Name:      request.Name,
+		CompanyID: request.CompanyID,
 	}
 
 	err := uc.repository.Save(&category)
-	if err != nil {
-		return err
-	}
 
-	return nil
+	return err
 }
 
-// GetAllLoans implements category.CategoryUseCase.
-func (uc *categoryUseCase) GetAllLoans(page, size string) (*[]categoryDto.CategoryResponse, int, error) {
-	pageInt, err := strconv.Atoi(page)
-	if err != nil {
-		return nil, 0, err
-	}
-
-	sizeInt, err := strconv.Atoi(size)
-	if err != nil {
-		return nil, 0, err
-	}
-
-	if sizeInt == 0 {
-		sizeInt = 10
-	}
-
+// GetAlls implements category.CategoryUseCase.
+func (uc *categoryUseCase) GetAll(page, size int, name, companyId string) (*[]categoryDto.CategoryResponse, int, error) {
 	var categories []categoryDto.CategoryResponse
-	results, total, err := uc.repository.GetAll(pageInt, sizeInt)
+	results, total, err := uc.repository.GetAll(page, size, name, companyId)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -57,8 +39,8 @@ func (uc *categoryUseCase) GetAllLoans(page, size string) (*[]categoryDto.Catego
 }
 
 // GetById implements category.CategoryUseCase.
-func (uc *categoryUseCase) GetLoanById(ID string) (categoryDto.CategoryResponse, error) {
-	category, err := uc.repository.GetById(ID)
+func (uc *categoryUseCase) GetById(ID, companyId string) (categoryDto.CategoryResponse, error) {
+	category, err := uc.repository.GetById(ID, companyId)
 	if err != nil {
 		return categoryDto.CategoryResponse{}, err
 	}
@@ -67,24 +49,21 @@ func (uc *categoryUseCase) GetLoanById(ID string) (categoryDto.CategoryResponse,
 }
 
 // Update implements category.CategoryUseCase.
-func (uc *categoryUseCase) UpdateLoan(request *categoryDto.CategoryRequest) error {
-
+func (uc *categoryUseCase) Update(request *categoryDto.CategoryRequest) error {
 	category := entity.Category{
-		Name: request.Name,
+		ID:        request.ID,
+		Name:      request.Name,
+		CompanyID: request.CompanyID,
 	}
 
 	err := uc.repository.Update(&category)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return err
 }
 
 // Delete implements category.CategoryUseCase
-func (uc *categoryUseCase) DeleteLoan(ID string) error {
+func (uc *categoryUseCase) Delete(ID, companyId string) error {
 
-	err := uc.repository.Delete(ID)
+	err := uc.repository.Delete(ID, companyId)
 	return err
 }
 

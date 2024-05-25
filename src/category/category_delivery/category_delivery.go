@@ -3,6 +3,7 @@ package categoryDelivery
 import (
 	categoryDto "finpro-fenlie/model/dto/category"
 	jsonDTO "finpro-fenlie/model/dto/json"
+	"finpro-fenlie/pkg/middleware"
 	"finpro-fenlie/pkg/validation"
 	"finpro-fenlie/src/category"
 	"strconv"
@@ -27,37 +28,46 @@ func (cd *categoryDelivery) Create(ctx *gin.Context) {
 		return
 	}
 
-	err := cd.useCase.CreateLoan(&request)
+	companyId := ctx.GetHeader("companyId")
+	request.CompanyID = companyId
+
+	err := cd.useCase.Create(&request)
 	if err != nil {
 		jsonDTO.NewResponseError(ctx, err.Error())
 		return
 	}
 
-	jsonDTO.NewResponseSuccess(ctx, request, "created successfully")
+	jsonDTO.NewResponseSuccess(ctx, nil, "created successfully")
 }
 
 func (cd *categoryDelivery) GetAll(ctx *gin.Context) {
-	page := ctx.Query("page")
-	size := ctx.Query("size")
-
-	loans, total, err := cd.useCase.GetAllLoans(page, size)
+	page, err := strconv.Atoi(ctx.DefaultQuery("page", "1"))
 	if err != nil {
 		jsonDTO.NewResponseError(ctx, err.Error())
 		return
 	}
 
-	pageInt, err := strconv.Atoi(page)
+	size, err := strconv.Atoi(ctx.DefaultQuery("size", "10"))
+	if err != nil {
+		jsonDTO.NewResponseError(ctx, err.Error())
+		return
+	}
+	name := ctx.Query("name")
+
+	companyId := ctx.GetHeader("companyId")
+	categories, total, err := cd.useCase.GetAll(page, size, name, companyId)
 	if err != nil {
 		jsonDTO.NewResponseError(ctx, err.Error())
 		return
 	}
 
-	jsonDTO.NewResponseWithPaging(ctx, loans, pageInt, total)
+	jsonDTO.NewResponseWithPaging(ctx, categories, page, total)
 }
 
 func (cd *categoryDelivery) GetByID(ctx *gin.Context) {
 	ID := ctx.Param("id")
-	loans, err := cd.useCase.GetLoanById(ID)
+	companyId := ctx.GetHeader("companyId")
+	loans, err := cd.useCase.GetById(ID, companyId)
 	if err != nil {
 		jsonDTO.NewResponseError(ctx, err.Error())
 		return
@@ -67,10 +77,9 @@ func (cd *categoryDelivery) GetByID(ctx *gin.Context) {
 }
 
 func (cd *categoryDelivery) Update(ctx *gin.Context) {
-	ID := ctx.Param("id")
+
 	var request categoryDto.CategoryRequest
 
-	request.ID = ID
 	if err := ctx.ShouldBindJSON(&request); err != nil {
 		validationErr := validation.GetValidationError(err)
 		if len(validationErr) > 0 {
@@ -81,7 +90,13 @@ func (cd *categoryDelivery) Update(ctx *gin.Context) {
 		return
 	}
 
-	err := cd.useCase.UpdateLoan(&request)
+	ID := ctx.Param("id")
+	companyId := ctx.GetHeader("companyId")
+
+	request.ID = ID
+	request.CompanyID = companyId
+
+	err := cd.useCase.Update(&request)
 	if err != nil {
 		jsonDTO.NewResponseError(ctx, err.Error())
 		return
@@ -92,8 +107,9 @@ func (cd *categoryDelivery) Update(ctx *gin.Context) {
 
 func (cd *categoryDelivery) Delete(ctx *gin.Context) {
 	ID := ctx.Param("id")
+	companyId := ctx.GetHeader("companyId")
 
-	err := cd.useCase.DeleteLoan(ID)
+	err := cd.useCase.Delete(ID, companyId)
 	if err != nil {
 		jsonDTO.NewResponseError(ctx, err.Error())
 		return
@@ -105,12 +121,13 @@ func (cd *categoryDelivery) Delete(ctx *gin.Context) {
 func NewCategoryDelivery(v1Group *gin.RouterGroup, useCase category.CategoryUseCase) {
 	handler := categoryDelivery{useCase}
 
-	loans := v1Group.Group("/category")
+	category := v1Group.Group("/category")
+	category.Use(middleware.JWTAuth("ADMIN", "EMPLOYEE"))
 	{
-		loans.POST("", handler.Create)
-		loans.GET("", handler.GetAll)
-		loans.GET("/:id", handler.GetByID)
-		loans.PUT("/:id", handler.Update)
-		loans.DELETE("/:id", handler.Delete)
+		category.POST("", handler.Create)
+		category.GET("", handler.GetAll)
+		category.GET("/:id", handler.GetByID)
+		category.PUT("/:id", handler.Update)
+		category.DELETE("/:id", handler.Delete)
 	}
 }

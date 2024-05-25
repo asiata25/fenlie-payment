@@ -21,7 +21,7 @@ func (repo *productRepository) GetAllProducts(page, pageSize int, name, companyI
 	var products []entity.Product
 	var totalItems int64
 
-	if err := repo.db.Model(&entity.Product{}).Scopes(helper.FindBasedOnCompany(companyId), helper.Paginate(page, pageSize)).Where("products.name LIKE $1", "%"+name+"%").Count(&totalItems).Joins("Category", repo.db.Select("Category.name")).Error; err != nil {
+	if err := repo.db.Model(&entity.Product{}).Scopes(helper.FindBasedOnCompany(companyId), helper.Paginate(page, pageSize)).Where("products.name LIKE $1", "%"+name+"%").Count(&totalItems).Joins("Category", repo.db.Select("Category.name")).Find(&products).Error; err != nil {
 		return nil, 0, err
 	}
 

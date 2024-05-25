@@ -6,17 +6,17 @@ import (
 )
 
 type CategoryRepository interface {
-	Save(loan *entity.Category) error
-	GetAll(page, size int) (*[]entity.Category, int64, error)
-	GetById(id string) (entity.Category, error)
-	Update(loan *entity.Category) error
-	Delete(id string) error
+	Save(category *entity.Category) error
+	GetAll(page, size int, name, companyId string) (*[]entity.Category, int64, error)
+	GetById(id, companyId string) (entity.Category, error)
+	Update(category *entity.Category) error
+	Delete(id, companyId string) error
 }
 
 type CategoryUseCase interface {
-	CreateLoan(request *categoryDto.CategoryRequest) error
-	GetAllLoans(page, size string) (*[]categoryDto.CategoryResponse, int, error)
-	GetLoanById(ID string) (categoryDto.CategoryResponse, error)
-	UpdateLoan(request *categoryDto.CategoryRequest) error
-	DeleteLoan(ID string) error
+	Create(request *categoryDto.CategoryRequest) error
+	GetAll(page, size int, name, companyId string) (*[]categoryDto.CategoryResponse, int, error)
+	GetById(id, companyId string) (categoryDto.CategoryResponse, error)
+	Update(request *categoryDto.CategoryRequest) error
+	Delete(id, companyId string) error
 }
