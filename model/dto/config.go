@@ -9,6 +9,8 @@ type (
 		Version      string
 		ClientID     string
 		ClientSecret string
+		BrickID      string
+		BrickSecret  string
 	}
 
 	dbConfig struct {
@@ -46,4 +48,6 @@ func (c *ConfigData) MarshalZerologObject(e *zerolog.Event) {
 	e.Str("VERSION", c.Version)
 	e.Str("CLIENT ID", c.ClientID)
 	e.Str("CLIENT SECRET", c.ClientSecret)
+	e.Str("BRICK ID", c.BrickID)
+	e.Str("BRICK SECRET", c.BrickSecret)
 }
