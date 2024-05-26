@@ -1,0 +1,24 @@
+services:
+  postgres:
+    container_name: sql-database
+    image: postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - fenlie-network
+    environment:
+      POSTGRES_PASSWORD: root
+
+  fenlie_deploy:
+    depends_on:
+      - postgres
+    container_name: fenlie-deploy
+    image: fenlie-deploy
+    ports:
+      - "8080:8080"
+    networks:
+      - fenlie-network
+
+networks:
+  fenlie-network:
+    name: fenlie-network
