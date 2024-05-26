@@ -1,5 +1,10 @@
 package transaction
 
+import (
+	"finpro-fenlie/model/entity"
+	"time"
+)
+
 type (
 	RequestTransaction struct {
 		Total              int                 `json:"total" binding:"required,number"`
@@ -18,6 +23,17 @@ type (
 	Invoices struct {
 		EmailCustomer string `json:"email_customer" binding:"required,email"`
 		Amount        int    `json:"amount" binding:"required,number"`
+	}
+
+	ResponseTransaction struct {
+		ID                 string                     `json:"id"`
+		OrderDate          time.Time                  `json:"order_date"`
+		Status             string                     `json:"status"`
+		CompanyID          string                     `json:"company_id"`
+		UserID             string                     `json:"user_id"`
+		DetailTransactions []entity.DetailTransaction `json:"detail_transactions"`
+		Invoices           []entity.Invoice           `json:"invoices"`
+		Total              int                        `json:"total"`
 	}
 
 	// RequestTransactionEach struct {
