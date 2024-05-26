@@ -1,6 +1,7 @@
 package transactionRepository
 
 import (
+	"finpro-fenlie/helper"
 	"finpro-fenlie/model/entity"
 	"finpro-fenlie/src/transaction"
 
@@ -72,6 +73,54 @@ func (r *transactionRepository) InputTransaction(payload entity.Transaction) err
 	return nil
 }
 
+func (r *transactionRepository) RetrieveAllTransaction(page, size int, orderDate, status, companyId string) ([]entity.Transaction, int, error) {
+	var transactions []entity.Transaction
+	var total int64
+
+	err := r.db.Model(&entity.Transaction{}).Scopes(helper.FindBasedOnCompany(companyId), helper.Paginate(page, size)).Where("").Count(&total).Joins("DetailTransaction", r.db.Model(&entity.DetailTransaction{})).Joins("Invoice", r.db.Model(&entity.Invoice{})).Find(&transactions).Error
+
+	return transactions, int(total), err
+}
+
+func (r *transactionRepository) RetrieveTransactionByID(id string, companyId string) (entity.Transaction, error) {
+	var transaction entity.Transaction
+	err := r.db.Where("id = ? AND company_id = ?", id, companyId).Preload("DetailTransactions").Preload("Invoices").First(&transaction).Error
+	return transaction, err
+}
+
+func (r *transactionRepository) EditTransaction(id, companyId string, payload map[string]interface{}) error {
+	tx := r.db.Begin()
+	if tx.Error != nil {
+		return tx.Error
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	// Cek Invoices
+	var invoices []entity.Invoice
+	err := tx.Where("transaction_id = ? AND (status = 'paid' OR status = 'complete')", id).Find(&invoices).Error
+	if err != nil {
+		tx.Rollback()
+		return errors.New(err.Error())
+	}
+
+	// Update Transaction
+	err = tx.Model(&entity.Transaction{}).Scopes(helper.FindBasedOnCompany(companyId)).Where("id = ?", id).Updates(&payload).Error
+	if err != nil {
+		tx.Rollback()
+		return errors.New(err.Error())
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // func (r *transactionRepository) InputTransactionEach(request transactionDto.RequestTransactionEach, userInfo *middlewareDto.UserInfo) error {
 // 	tx := r.db.Begin()
 // 	if tx.Error != nil {
@@ -82,11 +131,9 @@ func (r *transactionRepository) InputTransaction(payload entity.Transaction) err
 // 			tx.Rollback()
 // 		}
 // 	}()
-
 // 	idTrx := uuid.New()
 // 	orderDate := time.Now().Format("2006-01-02 15:04:05")
 // 	totalTrx := 0
-
 // 	// Create Transaction
 // 	err := r.db.Create(&entity.Transaction{
 // 		ID:        idTrx,
@@ -100,7 +147,6 @@ func (r *transactionRepository) InputTransaction(payload entity.Transaction) err
 // 	if err != nil {
 // 		tx.Rollback()
 // 	}
-
 // 	// Get Product Data, Create Detail Transaction and Invoices
 // 	productRepo := product_repository.NewProductRepository(r.db)
 // 	for _, v := range request.RequestProduct {
@@ -108,13 +154,10 @@ func (r *transactionRepository) InputTransaction(payload entity.Transaction) err
 // 		if err != nil {
 // 			tx.Rollback()
 // 		}
-
 // 		if !product.Status {
 // 			tx.Rollback()
 // 		}
-
 // 		total := product.Price * v.Quantity
-
 // 		// Create Detail Transaction
 // 		err = r.db.Create(&entity.DetailTransaction{
 // 			ID:        uuid.New(),
@@ -127,7 +170,6 @@ func (r *transactionRepository) InputTransaction(payload entity.Transaction) err
 // 		if err != nil {
 // 			tx.Rollback()
 // 		}
-
 // 		// Create Invoices
 // 		err = r.db.Create(&entity.Invoices{
 // 			ID:      uuid.New(),
@@ -139,19 +181,15 @@ func (r *transactionRepository) InputTransaction(payload entity.Transaction) err
 // 		if err != nil {
 // 			tx.Rollback()
 // 		}
-
 // 		totalTrx += total
 // 	}
-
 // 	if err := r.db.Model(&entity.Transaction{}).Where("id = ? AND company_id = ?", idTrx, userInfo.CompanyID).Update("total", totalTrx).Error; err != nil {
 // 		tx.Rollback()
 // 		return err
 // 	}
-
 // 	if err := tx.Commit().Error; err != nil {
 // 		return err
 // 	}
-
 // 	return nil
 // }
 
@@ -165,11 +203,9 @@ func (r *transactionRepository) InputTransaction(payload entity.Transaction) err
 // 			tx.Rollback()
 // 		}
 // 	}()
-
 // 	idTrx := uuid.New()
 // 	orderDate := time.Now().Format("2006-01-02 15:04:05")
 // 	totalTrx := 0
-
 // 	// Create Transaction
 // 	err := r.db.Create(&entity.Transaction{
 // 		ID:        idTrx,
@@ -183,7 +219,6 @@ func (r *transactionRepository) InputTransaction(payload entity.Transaction) err
 // 	if err != nil {
 // 		tx.Rollback()
 // 	}
-
 // 	// Get Product Data, Create Detail Transaction and Invoices
 // 	productRepo := product_repository.NewProductRepository(r.db)
 // 	for _, v := range request.RequestProduct {
@@ -194,15 +229,12 @@ func (r *transactionRepository) InputTransaction(payload entity.Transaction) err
 // 				return errors.New("product with ID " + v.ProductID.String() + " not found")
 // 			}
 // 		}
-
 // 		if !product.Status {
 // 			tx.Rollback()
 // 			return errors.New("product with ID " + v.ProductID.String() + " is not available")
 // 		}
-
 // 		total := product.Price * v.Quantity
 // 		totalTrx += total
-
 // 		// Create Detail Transaction
 // 		err = r.db.Create(&entity.DetailTransaction{
 // 			ID:        uuid.New(),
@@ -216,9 +248,7 @@ func (r *transactionRepository) InputTransaction(payload entity.Transaction) err
 // 			tx.Rollback()
 // 		}
 // 	}
-
 // 	amountPerEmail := int(math.Ceil(float64(totalTrx) / float64(emailCount)))
-
 // 	// Create Invoices
 // 	for _, email := range emailList {
 // 		err = r.db.Create(&entity.Invoices{
@@ -232,20 +262,17 @@ func (r *transactionRepository) InputTransaction(payload entity.Transaction) err
 // 			tx.Rollback()
 // 		}
 // 	}
-
 // 	if err := r.db.Model(&entity.Transaction{}).Where("id = ? AND company_id = ?", idTrx, userInfo.CompanyID).Update("total", totalTrx).Error; err != nil {
 // 		tx.Rollback()
 // 		return err
 // 	}
-
 // 	if err := tx.Commit().Error; err != nil {
 // 		return err
 // 	}
-
 // 	return nil
 // }
 
-// func (r *transactionRepository) RetrieveAllTransaction(page, size int, orderDate, status string, totalData int, userInfo *middlewareDto.UserInfo) (transactionDto.GetResponseTransaction, error) {
+// func (r *transactionRepository) RetrieveAllTransaction(page, size int, orderDate, status, companyId string) ([]entity.Transaction, error) {
 // 	if page <= 0 {
 // 		page = 1
 // 	}
@@ -254,7 +281,6 @@ func (r *transactionRepository) InputTransaction(payload entity.Transaction) err
 // 	}
 // 	offset := (page - 1) * size
 // 	var transactions []entity.Transaction
-
 // 	query := r.db.Where("company_id = ?", uuid.MustParse(userInfo.CompanyID))
 // 	if status != "" {
 // 		statusBool, err := strconv.ParseBool(status)
@@ -266,7 +292,6 @@ func (r *transactionRepository) InputTransaction(payload entity.Transaction) err
 // 	if orderDate != "" {
 // 		query = query.Where("order_date = ?", orderDate)
 // 	}
-
 // 	if err := query.Limit(size).Offset(offset).Find(&transactions).Error; err != nil {
 // 		return transactionDto.GetResponseTransaction{}, err
 // 	}
@@ -277,14 +302,12 @@ func (r *transactionRepository) InputTransaction(payload entity.Transaction) err
 // 		if err := r.db.Where("order_id = ?", trx.ID).Find(&details).Error; err != nil {
 // 			return transactionDto.GetResponseTransaction{}, err
 // 		}
-
 // 		var products []transactionDto.GetProduct
 // 		for _, detail := range details {
 // 			var product productDto.Product
 // 			if err := r.db.Where("id = ?", detail.ProductID).First(&product).Error; err != nil {
 // 				return transactionDto.GetResponseTransaction{}, err
 // 			}
-
 // 			products = append(products, transactionDto.GetProduct{
 // 				Name:     product.Name,
 // 				Price:    product.Price,
@@ -292,12 +315,10 @@ func (r *transactionRepository) InputTransaction(payload entity.Transaction) err
 // 				Total:    detail.Total,
 // 			})
 // 		}
-
 // 		var invoices []entity.Invoices
 // 		if err := r.db.Where("order_id = ?", trx.ID).Find(&invoices).Error; err != nil {
 // 			return transactionDto.GetResponseTransaction{}, err
 // 		}
-
 // 		var responseInvoices []transactionDto.GetInvoice
 // 		for _, invoice := range invoices {
 // 			responseInvoices = append(responseInvoices, transactionDto.GetInvoice{
@@ -306,12 +327,10 @@ func (r *transactionRepository) InputTransaction(payload entity.Transaction) err
 // 				Status: invoice.Status,
 // 			})
 // 		}
-
 // 		var user userDto.User
 // 		if err := r.db.Where("id = ?", trx.UserID).First(&user).Error; err != nil {
 // 			return transactionDto.GetResponseTransaction{}, err
 // 		}
-
 // 		responseTransactions = append(responseTransactions, transactionDto.ResponseTransaction{
 // 			ID:        trx.ID,
 // 			OrderDate: trx.OrderDate,
@@ -326,11 +345,9 @@ func (r *transactionRepository) InputTransaction(payload entity.Transaction) err
 // 			Invoices: responseInvoices,
 // 		})
 // 	}
-
 // 	if len(responseTransactions) == 0 {
 // 		return transactionDto.GetResponseTransaction{}, errors.New("data not found")
 // 	}
-
 // 	getResponseTransaction := transactionDto.GetResponseTransaction{
 // 		Transactions: responseTransactions,
 // 		Paging: transactionDto.Paging{
@@ -339,7 +356,6 @@ func (r *transactionRepository) InputTransaction(payload entity.Transaction) err
 // 		},
 // 		TotalData: totalData,
 // 	}
-
 // 	return getResponseTransaction, nil
 // }
 
