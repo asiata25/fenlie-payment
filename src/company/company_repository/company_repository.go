@@ -46,9 +46,9 @@ func (c *companyRepository) RetrieveByID(id string) (*entity.Company, error) {
 }
 
 // Save implements company.CompanyRepository.
-func (c *companyRepository) Save(payload entity.Company) error {
+func (c *companyRepository) Save(payload entity.Company) (string, error) {
 	err := c.db.Create(&payload).Error
-	return err
+	return payload.ID, err
 }
 
 // Update implements company.CompanyRepository.
