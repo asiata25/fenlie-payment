@@ -9,7 +9,7 @@ import (
 
 func TestGenerateAccessToken(t *testing.T) {
 	client := resty.New()
-	brick := NewBrickRepository(client, "f41b695e-6e67-4409-96f7-6b2e3b6e07b1", "PRTFiWDFtPUyN9V0FsIoUAqHe0bpvN")
+	brick := NewBrickRepository(client)
 
 	token, err := brick.GenerateAccessToken()
 	assert.Empty(t, token)

@@ -30,10 +30,11 @@ type (
 	}
 
 	BrickCreatePaymentLinkRequest struct {
-		Amount       string `json:"amount" validate:"required,number"`
-		ReferenceId  string `json:"referenceId" validate:"required"`
-		Description  string `json:"description" validate:"required"`
-		EndUserEmail string `json:"endUserEmail" validate:"required"`
+		Amount       string `json:"amount"`
+		ReferenceId  string `json:"referenceId"`
+		Description  string `json:"description"`
+		EndUserEmail string `json:"endUserEmail"`
+		EndUserName  string `json:"endUserName"`
 	}
 
 	BrickCreatePaymentLinkResponse struct {
@@ -44,6 +45,12 @@ type (
 			Amount          int    `json:"amount"`
 			ReferenceId     string `json:"referenceId"`
 			Status          string `json:"status"`
+		} `json:"data"`
+	}
+
+	BrickPaymentStatusResponse struct {
+		Data struct {
+			Status string `json:"status"`
 		} `json:"data"`
 	}
 )
