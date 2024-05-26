@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS invoices (
   transaction_id uuid REFERENCES transactions(id) NOT NULL,
   payment_method varchar(50),
   amount int NOT NULL,
-  status payment_type DEFAULT unpaid,
+  status payment_type DEFAULT 'unpaid',
   company_id uuid REFERENCES companies(id),
   created_at TIMESTAMP DEFAULT current_timestamp,
   updated_at TIMESTAMP DEFAULT current_timestamp,
