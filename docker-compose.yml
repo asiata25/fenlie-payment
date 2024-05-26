@@ -9,11 +9,22 @@ services:
     environment:
       POSTGRES_PASSWORD: root
 
+  migrate:
+    depends_on:
+      - postgres
+    image: migrate/migrate
+    volumes:
+      - ./db/migrations:/migrations
+    networks:
+      - fenlie-network
+    entrypoint: ["migrate", "-path=/migrations/", "-database", "postgres://postgres:root@sql-database:5432/fenlie?sslmode=disable", "up"]
+
   fenlie_deploy:
     depends_on:
       - postgres
+      - migrate
     container_name: fenlie-deploy
-    image: fenlie-deploy
+    image: asiata25/fenlie
     ports:
       - "8080:8080"
     networks:
