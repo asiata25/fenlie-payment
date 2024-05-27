@@ -6,7 +6,7 @@ import (
 )
 
 type CompanyRepository interface {
-	Save(payload entity.Company) error
+	Save(payload entity.Company) (string, error)
 	Update(payload entity.Company) error
 	Delete(id string) error
 	RetrieveByID(id string) (*entity.Company, error)

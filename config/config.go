@@ -45,11 +45,13 @@ func InitEnv() (*dto.ConfigData, error) {
 	logMode := os.Getenv("LOG_MODE")
 	clientId := os.Getenv("CLIENT_ID")
 	clientSecret := os.Getenv("CLIENT_SECRET")
+	emailSecret := os.Getenv("EMAIL_SECRET")
 	brickId := os.Getenv("BRICK_ID")
 	brickSecret := os.Getenv("BRICK_SECRET")
 
 	if dbHost == "" || dbPort == "" || dbUser == "" || dbPass == "" || dbName == "" ||
-		dbMaxIdle == "" || dbMaxConn == "" || dbMaxLifetime == "" || logMode == "" || dbLogLevel == "" || clientId == "" || clientSecret == "" || brickId == "" || brickSecret == "" {
+		dbMaxIdle == "" || dbMaxConn == "" || dbMaxLifetime == "" || logMode == "" || dbLogLevel == "" || clientId == "" || clientSecret == "" || brickId == "" || brickSecret == "" || emailSecret == "" {
+
 		return &configData, errors.New("DB Config is not properly set")
 	}
 
@@ -88,6 +90,8 @@ func InitEnv() (*dto.ConfigData, error) {
 
 	configData.ClientID = clientId
 	configData.ClientSecret = clientSecret
+
+	configData.EmailSecret = emailSecret
 	configData.BrickID = brickId
 	configData.BrickSecret = brickSecret
 

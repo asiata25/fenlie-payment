@@ -9,6 +9,7 @@ type (
 		Version      string
 		ClientID     string
 		ClientSecret string
+		EmailSecret  string
 		BrickID      string
 		BrickSecret  string
 	}
@@ -48,6 +49,10 @@ func (c *ConfigData) MarshalZerologObject(e *zerolog.Event) {
 	e.Str("VERSION", c.Version)
 	e.Str("CLIENT ID", c.ClientID)
 	e.Str("CLIENT SECRET", c.ClientSecret)
+<<<<<<< HEAD
+	e.Str("EMAIL SECRET", c.EmailSecret)
+=======
 	e.Str("BRICK ID", c.BrickID)
 	e.Str("BRICK SECRET", c.BrickSecret)
+>>>>>>> 1588407344866530f77b4197ae765a271c7f34d0
 }

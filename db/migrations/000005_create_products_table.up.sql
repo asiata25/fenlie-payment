@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS products (
     description TEXT,
     status bool NOT NULL,
     category_id uuid,
+    image TEXT,
     company_id uuid NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

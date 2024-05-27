@@ -4,7 +4,9 @@ import (
 	"finpro-fenlie/helper"
 	companyDTO "finpro-fenlie/model/dto/company"
 	"finpro-fenlie/model/entity"
+	"finpro-fenlie/pkg/email"
 	"finpro-fenlie/src/company"
+	"fmt"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -60,9 +62,46 @@ func (c *companyUseCase) Create(request companyDTO.CompanyCreateRequest) error {
 
 	company.SecretKey = string(hashedSecret)
 
-	error := c.repository.Save(company)
+	id, error := c.repository.Save(company)
+	bodyMail := fmt.Sprintf(
+		`<table>
+    <tr>
+        <td colspan="2"><h3>Company</h3></td>
+    </tr>
+    <tr>
+        <td>ID:</td>
+        <td>%s</td>
+    </tr>
+    <tr>
+        <td>Name:</td>
+        <td>%s</td>
+    </tr>
+    <tr>
+        <td>Secret Key:</td>
+        <td>%s</td>
+    </tr>
+    <tr>
+        <td colspan="2"><h3>User</h3></td>
+    </tr>
+    <tr>
+        <td>Name:</td>
+        <td>%s</td>
+    </tr>
+    <tr>
+        <td>Email:</td>
+        <td>%s</td>
+    </tr>
+    <tr>
+        <td>Password:</td>
+        <td>%s</td>
+    </tr>
+</table>
+	`, id, request.Name, request.SecretKey, request.User.Name, request.User.Email, request.User.Password)
 
-	return error
+	if error != nil {
+		email.Send(request.User.Email, "Company Account", bodyMail)
+	}
+	return err
 }
 
 // Delete implements company.CompanyUseCase.

@@ -4,6 +4,7 @@ import (
 	"finpro-fenlie/helper"
 	transactionDTO "finpro-fenlie/model/dto/transaction"
 	"finpro-fenlie/model/entity"
+	"finpro-fenlie/pkg/email"
 	"finpro-fenlie/src/transaction"
 )
 
@@ -46,6 +47,13 @@ func (usecase *transactionUC) CreateTransaction(request transactionDTO.RequestTr
 	err := usecase.transactionRepo.InputTransaction(transaction)
 	if err != nil {
 		return err
+	}
+
+	for _, invoice := range invoices {
+		err = email.Send(invoice.EmailCustomer, "Invoice Created", "body")
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil

@@ -15,7 +15,7 @@ type ProductRepository interface {
 
 type ProductUsecase interface {
 	GetAllProducts(page, pageSize int, name, companyId string) ([]product.ProductResponse, int, error)
-	CreateProduct(request product.ProductCreateRequest) error
+	CreateProduct(request product.ProductCreateRequest, imageURL string) error
 	GetProduct(id, companyId string) (product.ProductResponse, error)
 	UpdateProduct(request product.ProductUpdateRequest) error
 	DeleteProduct(id, companyId string) error
