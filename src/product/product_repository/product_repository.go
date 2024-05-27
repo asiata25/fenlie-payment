@@ -21,7 +21,7 @@ func (repo *productRepository) GetAllProducts(page, pageSize int, name, companyI
 	var products []entity.Product
 	var totalItems int64
 
-	if err := repo.db.Model(&entity.Product{}).Scopes(helper.FindBasedOnCompany(companyId), helper.Paginate(page, pageSize)).Where("products.name LIKE $1", "%"+name+"%").Count(&totalItems).Joins("Category", repo.db.Select("Category.name")).Find(&products).Error; err != nil {
+	if err := repo.db.Model(&entity.Product{}).Scopes(helper.Paginate(page, pageSize)).Where("Products.name LIKE $1 AND Products.company_id = $2", "%"+name+"%", companyId).Count(&totalItems).Joins("Category", repo.db.Select("Category.name")).Find(&products).Error; err != nil {
 		return nil, 0, err
 	}
 
@@ -38,8 +38,9 @@ func (repo *productRepository) InsertProduct(product entity.Product) error {
 
 func (repo *productRepository) GetById(id, companyId string) (entity.Product, error) {
 	var product entity.Product
-	if err := repo.db.Scopes(helper.FindBasedOnCompany(companyId)).Joins("Category", repo.db.Select("Category.name")).First(&product, "products.id = ?", id).Error; err != nil {
-		return entity.Product{}, err
+	result := repo.db.Scopes(helper.FindBasedOnCompany(companyId)).Preload("Category").Where("id = $1", id).Take(&product)
+	if result.Error != nil {
+		return product, result.Error
 	}
 
 	return product, nil

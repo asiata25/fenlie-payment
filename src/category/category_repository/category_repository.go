@@ -44,7 +44,7 @@ func (repo *categoryRepository) GetAll(page, size int, name, companyId string) (
 // GetById implements category.categoryRepository.
 func (repo *categoryRepository) GetById(id, companyId string) (entity.Category, error) {
 	var category entity.Category
-	result := repo.db.Scopes(helper.FindBasedOnCompany(companyId)).Where("id = $1", id).Take(&category)
+	result := repo.db.Scopes(helper.FindBasedOnCompany(companyId)).Preload("Products").Where("id = $1", id).Take(&category)
 	if result.Error != nil {
 		return category, result.Error
 	}

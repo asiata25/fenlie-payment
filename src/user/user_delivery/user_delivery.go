@@ -53,7 +53,7 @@ func (u *UserDelivery) createUser(ctx *gin.Context) {
 	if err := ctx.ShouldBindJSON(&user); err != nil {
 		validationErr := validation.GetValidationError(err)
 		if len(validationErr) > 0 {
-			json.NewResponseBadRequest(ctx, validationErr, "bad request")
+			json.NewResponseValidationError(ctx, validationErr, "bad request")
 			return
 		}
 
@@ -74,15 +74,15 @@ func (u *UserDelivery) createUser(ctx *gin.Context) {
 }
 
 func (u *UserDelivery) getUser(ctx *gin.Context) {
-	page, err := strconv.Atoi(ctx.Query("page"))
-	if err != nil {
-		json.NewResponseError(ctx, err.Error())
+	page, err := strconv.Atoi(ctx.DefaultQuery("page", "1"))
+	if err != nil || page < 0 {
+		json.NewResponseBadRequest(ctx, "fail to convert data", "page is not a positive number")
 		return
 	}
 
-	size, err := strconv.Atoi(ctx.Query("size"))
-	if err != nil {
-		json.NewResponseError(ctx, err.Error())
+	size, err := strconv.Atoi(ctx.DefaultQuery("size", "10"))
+	if err != nil || size < 0 {
+		json.NewResponseBadRequest(ctx, "fail to convert data", "size is not a positive number")
 		return
 	}
 
@@ -123,7 +123,7 @@ func (u *UserDelivery) updateUser(ctx *gin.Context) {
 	if err := ctx.ShouldBindJSON(&request); err != nil {
 		validationErr := validation.GetValidationError(err)
 		if len(validationErr) > 0 {
-			json.NewResponseBadRequest(ctx, validationErr, "bad request")
+			json.NewResponseValidationError(ctx, validationErr, "bad request")
 			return
 		}
 

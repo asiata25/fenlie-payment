@@ -1,12 +1,12 @@
 package companyDelivery
 
 import (
-	"finpro-fenlie/helper"
 	companyDTO "finpro-fenlie/model/dto/company"
 	jsonDTO "finpro-fenlie/model/dto/json"
 	"finpro-fenlie/pkg/validation"
 	"finpro-fenlie/src/company"
 	"os"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -20,11 +20,6 @@ func (c *companyDelivery) getById(ctx *gin.Context) {
 
 	company, err := c.useCase.GetById(companyId)
 	if err != nil {
-		if err := helper.CheckErrNotFound(err); err != nil {
-			jsonDTO.NewResponseSuccess(ctx, nil, err.Error())
-			return
-		}
-
 		jsonDTO.NewResponseError(ctx, err.Error())
 		return
 	}
@@ -37,7 +32,7 @@ func (c *companyDelivery) create(ctx *gin.Context) {
 	if err := ctx.ShouldBindJSON(&request); err != nil {
 		validationErr := validation.GetValidationError(err)
 		if len(validationErr) > 0 {
-			jsonDTO.NewResponseBadRequest(ctx, validationErr, "bad request")
+			jsonDTO.NewResponseValidationError(ctx, validationErr, "bad request")
 			return
 		}
 
@@ -67,13 +62,26 @@ func (c *companyDelivery) delete(ctx *gin.Context) {
 }
 
 func (c *companyDelivery) getAll(ctx *gin.Context) {
-	companies, err := c.useCase.GetAll()
+	page, err := strconv.Atoi(ctx.DefaultQuery("page", "1"))
+	if err != nil || page < 0 {
+		jsonDTO.NewResponseBadRequest(ctx, "fail to convert data", "page is not a positive number")
+		return
+	}
+
+	size, err := strconv.Atoi(ctx.DefaultQuery("size", "10"))
+	if err != nil || size < 0 {
+		jsonDTO.NewResponseBadRequest(ctx, "fail to convert data", "size is not a positive number")
+		return
+	}
+	name := ctx.Query("name")
+
+	companies, total, err := c.useCase.GetAll(page, size, name)
 	if err != nil {
 		jsonDTO.NewResponseError(ctx, err.Error())
 		return
 	}
 
-	jsonDTO.NewResponseSuccess(ctx, companies, "success")
+	jsonDTO.NewResponseWithPaging(ctx, companies, page, int(total))
 }
 
 func (c *companyDelivery) update(ctx *gin.Context) {
@@ -81,7 +89,7 @@ func (c *companyDelivery) update(ctx *gin.Context) {
 	if err := ctx.ShouldBindJSON(&request); err != nil {
 		validationErr := validation.GetValidationError(err)
 		if len(validationErr) > 0 {
-			jsonDTO.NewResponseBadRequest(ctx, validationErr, "bad request")
+			jsonDTO.NewResponseValidationError(ctx, validationErr, "bad request")
 			return
 		}
 
@@ -104,7 +112,7 @@ func (c *companyDelivery) update(ctx *gin.Context) {
 func NewCompanyDelivery(v1Group *gin.RouterGroup, useCase company.CompanyUseCase) {
 	handler := companyDelivery{useCase}
 
-	company := v1Group.Group("/company")
+	company := v1Group.Group("/companies")
 	company.Use(gin.BasicAuth(gin.Accounts{
 		os.Getenv("CLIENT_ID"): os.Getenv("CLIENT_SECRET"),
 	}))

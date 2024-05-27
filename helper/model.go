@@ -9,18 +9,36 @@ import (
 	"finpro-fenlie/model/entity"
 )
 
-func ToCompanyResponse(entity entity.Company) *company.CompanyResponse {
-	return &company.CompanyResponse{
+func ToCompanyResponse(entity entity.Company) company.CompanyResponse {
+	var users []company.UserCompany
+	for _, user := range entity.Users {
+		users = append(users, company.UserCompany{
+			Name:     user.Name,
+			Email:    user.Email,
+			Password: user.Password,
+			Role:     user.Role,
+		})
+	}
+
+	return company.CompanyResponse{
 		ID:        entity.ID,
 		Name:      entity.Name,
 		SecretKey: entity.SecretKey,
+		Users:     users,
 	}
 }
 
 func ToCategoryResponse(entity entity.Category) category.CategoryResponse {
+	var products []product.ProductResponse
+
+	for _, p := range entity.Products {
+		products = append(products, ToProductResponse(p))
+	}
+
 	return category.CategoryResponse{
-		ID:   entity.ID,
-		Name: entity.Name,
+		ID:       entity.ID,
+		Name:     entity.Name,
+		Products: products,
 	}
 }
 

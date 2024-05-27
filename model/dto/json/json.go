@@ -10,19 +10,16 @@ import (
 
 type (
 	jsonResponse struct {
-		Code    string      `json:"responseCode"`
 		Message string      `json:"responseMessage"`
 		Data    interface{} `json:"data,omitempty"`
 	}
 
 	jsonErrorResponse struct {
-		Code    string `json:"responseCode"`
 		Message string `json:"responseMessage"`
 		Error   string `json:"error,omitempty"`
 	}
 
 	paginationResponse struct {
-		Code   string      `json:"responseCode"`
 		Data   interface{} `json:"data,omitempty"`
 		Paging pageData    `json:"paging"`
 	}
@@ -38,7 +35,6 @@ type (
 	}
 
 	jsonBadRequestResponse struct {
-		Code      string            `json:"responseCode"`
 		Message   string            `json:"responseMessage"`
 		ErrorDesc []ValidationField `json:"error_description,omitempty"`
 	}
@@ -46,7 +42,6 @@ type (
 
 func NewResponseSuccess(c *gin.Context, result interface{}, message string) {
 	c.JSON(http.StatusOK, jsonResponse{
-		Code:    "200",
 		Message: message,
 		Data:    result,
 	})
@@ -54,7 +49,6 @@ func NewResponseSuccess(c *gin.Context, result interface{}, message string) {
 
 func NewResponseWithPaging(c *gin.Context, result interface{}, page int, total int) {
 	c.JSON(http.StatusOK, paginationResponse{
-		Code: "200",
 		Data: result,
 		Paging: pageData{
 			Page:      page,
@@ -63,11 +57,17 @@ func NewResponseWithPaging(c *gin.Context, result interface{}, page int, total i
 	})
 }
 
-func NewResponseBadRequest(c *gin.Context, validationField []ValidationField, message string) {
+func NewResponseValidationError(c *gin.Context, validationField []ValidationField, message string) {
 	c.JSON(http.StatusBadRequest, jsonBadRequestResponse{
-		Code:      "400",
 		Message:   message,
 		ErrorDesc: validationField,
+	})
+}
+
+func NewResponseBadRequest(c *gin.Context, err, message string) {
+	c.JSON(http.StatusBadRequest, jsonErrorResponse{
+		Message: message,
+		Error:   err,
 	})
 }
 
@@ -76,7 +76,6 @@ func NewResponseError(c *gin.Context, err string) {
 	log.Error().Err(errResp).Msg(err)
 
 	c.JSON(http.StatusInternalServerError, jsonErrorResponse{
-		Code:    "500",
 		Message: "internal server error",
 		Error:   err,
 	})
@@ -84,14 +83,12 @@ func NewResponseError(c *gin.Context, err string) {
 
 func NewResponseForbidden(c *gin.Context, message string) {
 	c.JSON(http.StatusForbidden, jsonResponse{
-		Code:    "403",
 		Message: message,
 	})
 }
 
 func NewResponseUnauthorized(c *gin.Context, message string) {
 	c.JSON(http.StatusUnauthorized, jsonResponse{
-		Code:    "401",
 		Message: message,
 	})
 }

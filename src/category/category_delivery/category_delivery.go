@@ -21,7 +21,7 @@ func (cd *categoryDelivery) Create(ctx *gin.Context) {
 	if err := ctx.ShouldBindJSON(&request); err != nil {
 		validationErr := validation.GetValidationError(err)
 		if len(validationErr) > 0 {
-			jsonDTO.NewResponseBadRequest(ctx, validationErr, "bad request")
+			jsonDTO.NewResponseValidationError(ctx, validationErr, "bad request")
 			return
 		}
 		jsonDTO.NewResponseError(ctx, "no request body found")
@@ -83,7 +83,7 @@ func (cd *categoryDelivery) Update(ctx *gin.Context) {
 	if err := ctx.ShouldBindJSON(&request); err != nil {
 		validationErr := validation.GetValidationError(err)
 		if len(validationErr) > 0 {
-			jsonDTO.NewResponseBadRequest(ctx, validationErr, "bad request")
+			jsonDTO.NewResponseValidationError(ctx, validationErr, "bad request")
 			return
 		}
 		jsonDTO.NewResponseError(ctx, "no request body found")
@@ -121,7 +121,7 @@ func (cd *categoryDelivery) Delete(ctx *gin.Context) {
 func NewCategoryDelivery(v1Group *gin.RouterGroup, useCase category.CategoryUseCase) {
 	handler := categoryDelivery{useCase}
 
-	category := v1Group.Group("/category")
+	category := v1Group.Group("/categories")
 	category.Use(middleware.JWTAuth("ADMIN", "EMPLOYEE"))
 	{
 		category.POST("", handler.Create)

@@ -16,19 +16,19 @@ type companyUseCase struct {
 }
 
 // GetAll implements company.CompanyUseCase.
-func (c *companyUseCase) GetAll() ([]*companyDTO.CompanyResponse, error) {
-	var companies []*companyDTO.CompanyResponse
+func (c *companyUseCase) GetAll(page, size int, name string) ([]companyDTO.CompanyResponse, int64, error) {
+	var companies []companyDTO.CompanyResponse
 
-	results, err := c.repository.FindAll()
+	results, total, err := c.repository.FindAll(page, size, name)
 	if err != nil {
-		return companies, err
+		return companies, 0, err
 	}
 
 	for _, result := range results {
-		companies = append(companies, helper.ToCompanyResponse(*result))
+		companies = append(companies, helper.ToCompanyResponse(result))
 	}
 
-	return companies, nil
+	return companies, total, nil
 }
 
 // Create implements company.CompanyUseCase.
@@ -111,13 +111,13 @@ func (c *companyUseCase) Delete(id string) error {
 }
 
 // GetById implements company.CompanyUseCase.
-func (c *companyUseCase) GetById(id string) (*companyDTO.CompanyResponse, error) {
+func (c *companyUseCase) GetById(id string) (companyDTO.CompanyResponse, error) {
 	company, err := c.repository.RetrieveByID(id)
 	if err != nil {
-		return &companyDTO.CompanyResponse{}, err
+		return companyDTO.CompanyResponse{}, err
 	}
 
-	return helper.ToCompanyResponse(*company), nil
+	return helper.ToCompanyResponse(company), nil
 }
 
 // Update implements company.CompanyUseCase.

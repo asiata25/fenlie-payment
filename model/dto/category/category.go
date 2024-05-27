@@ -1,5 +1,7 @@
 package category
 
+import "finpro-fenlie/model/dto/product"
+
 type CategoryRequest struct {
 	ID        string `json:"id"`
 	Name      string `json:"name,omitempty" binding:"required"`
@@ -7,6 +9,7 @@ type CategoryRequest struct {
 }
 
 type CategoryResponse struct {
-	ID   string `json:"id"`
-	Name string `json:"name,omitempty"`
+	ID       string                    `json:"id"`
+	Name     string                    `json:"name,omitempty"`
+	Products []product.ProductResponse `json:"products,omitempty"`
 }

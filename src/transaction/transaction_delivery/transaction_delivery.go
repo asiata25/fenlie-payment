@@ -38,9 +38,12 @@ func (t *TransactionDelivery) createTransaction(ctx *gin.Context) {
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		validationError := validation.GetValidationError(err)
 		if len(validationError) > 0 {
-			json.NewResponseBadRequest(ctx, validationError, "bad request")
+			json.NewResponseValidationError(ctx, validationError, "bad request")
 			return
 		}
+
+		json.NewResponseError(ctx, "no request body found")
+		return
 	}
 	companyId := ctx.GetHeader("companyId")
 	currentUserId := ctx.GetHeader("userId")

@@ -132,19 +132,24 @@ func (c *productDelivery) GetProduct(ctx *gin.Context) {
 }
 
 func (c *productDelivery) UpdateProduct(ctx *gin.Context) {
-	id := ctx.Param("id")
-	companyId := ctx.GetHeader("companyId")
+
 	var product productDTO.ProductUpdateRequest
-	product.ID = id
-	product.CompanyID = companyId
 
 	if err := ctx.ShouldBindJSON(&product); err != nil {
 		validationError := validation.GetValidationError(err)
 		if len(validationError) > 0 {
-			json.NewResponseBadRequest(ctx, validationError, "bad request")
+			json.NewResponseValidationError(ctx, validationError, "bad request")
 			return
 		}
+
+		json.NewResponseError(ctx, "no request body found")
+		return
 	}
+
+	id := ctx.Param("id")
+	companyId := ctx.GetHeader("companyId")
+	product.ID = id
+	product.CompanyID = companyId
 
 	err := c.productUC.UpdateProduct(product)
 	if err != nil {
