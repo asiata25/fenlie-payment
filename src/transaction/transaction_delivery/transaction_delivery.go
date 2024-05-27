@@ -1,11 +1,12 @@
 package transactionDelivery
 
 import (
-	jsonDTO "finpro-fenlie/model/dto/json"
+	"finpro-fenlie/model/dto/json"
 	transactionDTO "finpro-fenlie/model/dto/transaction"
 	"finpro-fenlie/pkg/middleware"
 	"finpro-fenlie/pkg/validation"
 	"finpro-fenlie/src/transaction"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -24,8 +25,10 @@ func NewTransactionDelivery(v1Group *gin.RouterGroup, transactionUC transaction.
 		transactions.POST("", handler.createTransaction)
 		// transactions.POST("/split-each", handler.createTransactionEach)
 		// transactions.POST("/split-equal", handler.createTransactionEqual)
-		// transactions.GET("", handler.getAllTransaction)
-		// transactions.GET("/:id", handler.getTransactionByID)
+		transactions.GET("", handler.getAllTransaction)
+		transactions.GET("/:id", handler.getTransactionByID)
+		transactions.PUT("/:id", handler.updateTransaction)
+
 	}
 }
 
@@ -35,7 +38,7 @@ func (t *TransactionDelivery) createTransaction(ctx *gin.Context) {
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		validationError := validation.GetValidationError(err)
 		if len(validationError) > 0 {
-			jsonDTO.NewResponseBadRequest(ctx, validationError, "bad request")
+			json.NewResponseBadRequest(ctx, validationError, "bad request")
 			return
 		}
 	}
@@ -47,11 +50,74 @@ func (t *TransactionDelivery) createTransaction(ctx *gin.Context) {
 	// Create transaction
 	err := t.transactionUC.CreateTransaction(req)
 	if err != nil {
-		jsonDTO.NewResponseError(ctx, err.Error())
+		json.NewResponseError(ctx, err.Error())
 		return
 	}
 
-	jsonDTO.NewResponseSuccess(ctx, nil, "success")
+	json.NewResponseSuccess(ctx, nil, "success")
+}
+
+func (t *TransactionDelivery) getAllTransaction(ctx *gin.Context) {
+	// Get query
+	page, err := strconv.Atoi(ctx.Query("page"))
+	if err != nil {
+		json.NewResponseError(ctx, err.Error())
+		return
+	}
+
+	size, err := strconv.Atoi(ctx.Query("size"))
+	if err != nil {
+		json.NewResponseError(ctx, err.Error())
+		return
+	}
+
+	orderDate := ctx.Query("orderDate")
+	status := ctx.Query("status")
+	companyId := ctx.GetHeader("companyId")
+
+	// Get all transaction
+	res, total, err := t.transactionUC.GetAllTransaction(page, size, orderDate, status, companyId)
+	if err != nil {
+		json.NewResponseError(ctx, err.Error())
+		return
+	}
+
+	json.NewResponseWithPaging(ctx, res, page, total)
+}
+
+func (t *TransactionDelivery) getTransactionByID(ctx *gin.Context) {
+	id := ctx.Param("id")
+	companyId := ctx.GetHeader("companyId")
+
+	// Get transaction by ID
+	res, err := t.transactionUC.GetTransactionByID(id, companyId)
+	if err != nil {
+		json.NewResponseError(ctx, err.Error())
+		return
+	}
+
+	json.NewResponseSuccess(ctx, res, "success")
+}
+
+func (t *TransactionDelivery) updateTransaction(ctx *gin.Context) {
+	id := ctx.Param("id")
+	companyId := ctx.GetHeader("companyId")
+
+	// Bind request
+	var req map[string]interface{}
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		json.NewResponseError(ctx, err.Error())
+		return
+	}
+
+	// Update transaction
+	err := t.transactionUC.UpdateTransaction(id, companyId, req)
+	if err != nil {
+		json.NewResponseError(ctx, err.Error())
+		return
+	}
+
+	json.NewResponseSuccess(ctx, nil, "success")
 }
 
 // func (t *TransactionDelivery) createTransactionEach(ctx *gin.Context) {

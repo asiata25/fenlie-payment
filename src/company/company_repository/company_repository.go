@@ -38,7 +38,7 @@ func (c *companyRepository) Delete(id string) error {
 func (c *companyRepository) RetrieveByID(id string) (*entity.Company, error) {
 	var company entity.Company
 
-	result := c.db.Where("id = $1", id).Take(&company)
+	result := c.db.Where("id = ?", id).Take(&company)
 	if result.RowsAffected < 1 {
 		return &company, errors.New("cannot find the requested data")
 	}

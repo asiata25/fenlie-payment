@@ -4,6 +4,7 @@ import (
 	"finpro-fenlie/model/dto/category"
 	"finpro-fenlie/model/dto/company"
 	"finpro-fenlie/model/dto/product"
+	"finpro-fenlie/model/dto/transaction"
 	"finpro-fenlie/model/dto/user"
 	"finpro-fenlie/model/entity"
 )
@@ -42,5 +43,18 @@ func ToUserResponse(entity entity.User) user.UserResponse {
 		Password: entity.Password,
 		Role:     entity.Role,
 		Company:  "",
+	}
+}
+
+func ToTransactionResponse(entity entity.Transaction) transaction.ResponseTransaction {
+	return transaction.ResponseTransaction{
+		ID:                 entity.ID,
+		OrderDate:          entity.OrderDate,
+		Status:             entity.Status,
+		CompanyID:          entity.CompanyID,
+		UserID:             entity.UserId,
+		DetailTransactions: entity.DetailTransactions,
+		Invoices:           entity.Invoices,
+		Total:              entity.Total,
 	}
 }

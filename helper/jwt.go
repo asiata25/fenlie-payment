@@ -7,6 +7,8 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
+// TODO: move this file to pkg
+
 var (
 	applicationName  = "finpro-fenlie"
 	jwtSigningMethod = jwt.SigningMethodHS256

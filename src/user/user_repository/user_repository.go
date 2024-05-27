@@ -18,7 +18,7 @@ func (repo *userRepository) RetrieveAllUser(page, size int, email, name, company
 	var users []entity.User
 	var total int64
 
-	err := repo.db.Model(&entity.User{}).Scopes(helper.FindBasedOnCompany(companyId), helper.Paginate(page, size)).Where("users.email LIKE $1 AND users.name LIKE $2", "%"+email+"%", "%"+name+"%").Count(&total).Joins("Company", repo.db.Select("Company.name")).Find(&users).Error
+	err := repo.db.Model(&entity.User{}).Scopes(helper.FindBasedOnCompany(companyId), helper.Paginate(page, size)).Where("users.email LIKE ? AND users.name LIKE ?", "%"+email+"%", "%"+name+"%").Count(&total).Joins("Company", repo.db.Select("Company.name")).Find(&users).Error
 
 	return users, int(total), err
 }
