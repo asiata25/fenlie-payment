@@ -3,9 +3,13 @@ package productDelivery
 import (
 	"finpro-fenlie/model/dto/json"
 	productDTO "finpro-fenlie/model/dto/product"
+	cloudx "finpro-fenlie/pkg/cloudinary"
 	"finpro-fenlie/pkg/middleware"
 	"finpro-fenlie/pkg/validation"
 	"finpro-fenlie/src/product"
+	"fmt"
+	"log"
+	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -55,25 +59,64 @@ func (c *productDelivery) GetAllProducts(ctx *gin.Context) {
 }
 
 func (c *productDelivery) CreateProduct(ctx *gin.Context) {
-	var product productDTO.ProductCreateRequest
 
-	if err := ctx.ShouldBindJSON(&product); err != nil {
-		validationError := validation.GetValidationError(err)
-		if len(validationError) > 0 {
-			json.NewResponseBadRequest(ctx, validationError, "bad request")
-			return
-		}
-	}
-	companyId := ctx.GetHeader("companyId")
-	product.CompanyID = companyId
-
-	err := c.productUC.CreateProduct(product)
+	err := ctx.Request.ParseMultipartForm(10 << 20)
 	if err != nil {
+		log.Printf("Failed to parse form data: %v", err)
+		json.NewResponseBadRequest(ctx, nil, "failed to parse form data")
+		return
+	}
+
+	file, _, err := ctx.Request.FormFile("image")
+	if err != nil {
+		log.Printf("Failed to get image: %v", err)
+		json.NewResponseBadRequest(ctx, nil, "failed to get image")
+		return
+	}
+	defer file.Close()
+
+	name := ctx.Request.FormValue("name")
+	priceStr := ctx.Request.FormValue("price")
+	statusStr := ctx.Request.FormValue("status")
+
+	price, err := strconv.Atoi(priceStr)
+	if err != nil {
+		log.Printf("Invalid price value: %v", err)
+		http.Error(ctx.Writer, "Invalid price value", http.StatusBadRequest)
+		return
+	}
+
+	status, err := strconv.ParseBool(statusStr)
+	if err != nil {
+		log.Printf("Invalid status value: %v", err)
+		http.Error(ctx.Writer, "Invalid status value", http.StatusBadRequest)
+		return
+	}
+
+	companyId := ctx.GetHeader("companyId")
+
+	product := productDTO.ProductCreateRequest{
+		Name:      name,
+		Price:     price,
+		Status:    status,
+		CompanyID: companyId,
+	}
+
+	imageURL, err := cloudx.UploadImage(file)
+	if err != nil {
+		log.Printf("Failed to upload image: %v", err)
+		http.Error(ctx.Writer, "Failed to upload image", http.StatusInternalServerError)
+		return
+	}
+	fmt.Println(imageURL)
+	err = c.productUC.CreateProduct(product, imageURL)
+	if err != nil {
+		log.Printf("Failed to create product: %v", err)
 		json.NewResponseError(ctx, err.Error())
 		return
 	}
 
-	json.NewResponseSuccess(ctx, nil, "success sreate product")
+	json.NewResponseSuccess(ctx, nil, "success create product")
 }
 
 func (c *productDelivery) GetProduct(ctx *gin.Context) {

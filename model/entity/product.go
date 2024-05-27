@@ -19,5 +19,7 @@ type Product struct {
 	DeletedAt   gorm.DeletedAt `gorm:"column:deleted_at;index"`
 	CompanyID   string         `gorm:"column:company_id"`
 	Company     Company        `gorm:"foreignKey:CompanyID"`
-	Category    Category
+
+	Category Category
+	Image    string `gorm:"column:image"`
 }

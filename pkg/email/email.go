@@ -2,6 +2,7 @@ package email
 
 import (
 	"finpro-fenlie/config"
+	"fmt"
 
 	"github.com/rs/zerolog/log"
 	"gopkg.in/gomail.v2"
@@ -12,21 +13,21 @@ func Send(to, subject, body string) error {
 	if err != nil {
 		log.Error().Err(err).Msg("failed to load config .env")
 	}
-	apiKey := configData.EmailSecret
 
-	from := "752c23001@smtp-brevo.com"
-	host := "smtp-relay.brevo.com"
+	host := "smtp.gmail.com"
 	port := 587
+	sender := "andreekapradana@gmail.com"
+	password := configData.EmailSecret
 
 	msg := gomail.NewMessage()
-	msg.SetHeader("From", from)
+	msg.SetHeader("From", fmt.Sprintf("%s <%s>", "Fenlie", sender))
 	msg.SetHeader("To", to)
 	msg.SetHeader("Subject", subject)
-	msg.SetBody("text/html", "<h1>Account</h1><pre>"+string(body)+"</pre>")
+	msg.SetBody("text/html", body)
 
-	n := gomail.NewDialer(host, port, from, apiKey)
+	d := gomail.NewDialer(host, port, sender, password)
 
-	if err := n.DialAndSend(msg); err != nil {
+	if err := d.DialAndSend(msg); err != nil {
 		return err
 	}
 

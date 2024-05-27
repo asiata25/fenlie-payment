@@ -49,7 +49,7 @@ func (usecase *transactionUC) CreateTransaction(request transactionDTO.RequestTr
 	}
 
 	for _, invoice := range invoices {
-		err = email.Send(invoice.EmailCustomer, "Invoice Created", "link to payment and etc")
+		err = email.Send(invoice.EmailCustomer, "Invoice Created", "body")
 		if err != nil {
 			return err
 		}
