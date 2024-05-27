@@ -6,7 +6,6 @@ import (
 	productDTO "finpro-fenlie/model/dto/product"
 	"finpro-fenlie/model/entity"
 	"finpro-fenlie/src/product"
-	"fmt"
 )
 
 type productUC struct {
@@ -33,7 +32,6 @@ func (uc *productUC) GetAllProducts(page, pageSize int, name, companyId string) 
 
 func (uc *productUC) CreateProduct(request productDTO.ProductCreateRequest, imageURL string) error {
 
-	fmt.Println(imageURL)
 	product := entity.Product{
 		Name:        request.Name,
 		Price:       request.Price,

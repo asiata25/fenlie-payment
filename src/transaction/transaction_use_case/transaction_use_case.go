@@ -4,7 +4,6 @@ import (
 	"finpro-fenlie/helper"
 	transactionDTO "finpro-fenlie/model/dto/transaction"
 	"finpro-fenlie/model/entity"
-	"finpro-fenlie/pkg/email"
 	"finpro-fenlie/src/transaction"
 )
 
@@ -49,26 +48,17 @@ func (usecase *transactionUC) CreateTransaction(request transactionDTO.RequestTr
 		return err
 	}
 
-	for _, invoice := range invoices {
-		err = email.Send(invoice.EmailCustomer, "Invoice Created", "body")
-		if err != nil {
-			return err
-		}
-	}
-
 	return nil
 
 }
 
 // Implement GetAllTransaction
-func (usecase *transactionUC) GetAllTransaction(page, size int, orderDate, status, companyId string) ([]transactionDTO.ResponseTransaction, int, error) {
+func (usecase *transactionUC) GetAllTransaction(page, size int, companyId string) ([]transactionDTO.ResponseTransaction, int, error) {
 	var transactions []transactionDTO.ResponseTransaction
-	response, total, err := usecase.transactionRepo.RetrieveAllTransaction(page, size, orderDate, status, companyId)
+	response, total, err := usecase.transactionRepo.RetrieveAllTransaction(page, size, companyId)
 
-	for i, resp := range response {
+	for _, resp := range response {
 		transactions = append(transactions, helper.ToTransactionResponse(resp))
-		transactions[i].DetailTransactions = resp.DetailTransactions
-		transactions[i].Invoices = resp.Invoices
 	}
 
 	if err != nil {

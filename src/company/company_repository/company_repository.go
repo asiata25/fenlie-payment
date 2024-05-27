@@ -54,10 +54,10 @@ func (c *companyRepository) RetrieveByID(id string) (entity.Company, error) {
 }
 
 // Save implements company.CompanyRepository.
-func (c *companyRepository) Save(payload entity.Company) error {
+func (c *companyRepository) Save(payload entity.Company) (string, error) {
 	tx := c.db.Begin()
 	if tx.Error != nil {
-		return tx.Error
+		return "", tx.Error
 	}
 	defer func() {
 		if r := recover(); r != nil {
@@ -69,7 +69,7 @@ func (c *companyRepository) Save(payload entity.Company) error {
 	err := tx.Omit("Users").Create(&payload).Error
 	if err != nil {
 		tx.Rollback()
-		return errors.New(err.Error())
+		return "", errors.New(err.Error())
 	}
 
 	err = tx.Create(&entity.User{
@@ -81,13 +81,13 @@ func (c *companyRepository) Save(payload entity.Company) error {
 	}).Error
 	if err != nil {
 		tx.Rollback()
-		return errors.New(err.Error())
+		return "", errors.New(err.Error())
 	}
 
 	if err := tx.Commit().Error; err != nil {
-		return err
+		return "", err
 	}
-	return nil
+	return payload.ID, nil
 }
 
 // Update implements company.CompanyRepository.

@@ -2,20 +2,26 @@ package transactionRepository
 
 import (
 	"finpro-fenlie/helper"
+	brickDTO "finpro-fenlie/model/dto/brick"
 	"finpro-fenlie/model/entity"
+	"finpro-fenlie/pkg/email"
+	"finpro-fenlie/src/brick"
 	"finpro-fenlie/src/transaction"
+	"strconv"
 
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
 )
 
 type transactionRepository struct {
-	db *gorm.DB
+	db    *gorm.DB
+	brick brick.BrickRepository
 }
 
-func NewTransactionRepository(db *gorm.DB) transaction.TransactionRepository {
+func NewTransactionRepository(db *gorm.DB, brick brick.BrickRepository) transaction.TransactionRepository {
 	return &transactionRepository{
-		db: db,
+		db:    db,
+		brick: brick,
 	}
 }
 
@@ -54,15 +60,44 @@ func (r *transactionRepository) InputTransaction(payload entity.Transaction) err
 	}
 
 	// Create Invoices
-	for _, invoice := range payload.Invoices {
-		err = tx.Create(&entity.Invoice{
-			TransactionID: payload.ID,
-			EmailCustomer: invoice.EmailCustomer,
-			Amount:        invoice.Amount,
-		}).Error
+	for _, inv := range payload.Invoices {
+		token, err := r.brick.GenerateAccessToken()
 		if err != nil {
 			tx.Rollback()
-			return errors.New(err.Error())
+			return err
+		}
+
+		invoice := &entity.Invoice{
+			TransactionID: payload.ID,
+			EmailCustomer: inv.EmailCustomer,
+			Amount:        inv.Amount,
+		}
+
+		result := tx.Create(&invoice)
+
+		amountStr := strconv.Itoa(invoice.Amount)
+
+		link, err := r.brick.GeneratePaymentLink(token, brickDTO.BrickCreatePaymentLinkRequest{
+			Amount:       amountStr,
+			ReferenceId:  invoice.ID,
+			Description:  "Pembayaran invoice by fenlie",
+			EndUserEmail: invoice.EmailCustomer,
+			EndUserName:  "Dear customer by Fenlie",
+		})
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
+
+		err = email.Send(invoice.EmailCustomer, "Invoice Created", link)
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
+
+		if result.Error != nil {
+			tx.Rollback()
+			return errors.New(result.Error.Error())
 		}
 	}
 
@@ -73,11 +108,19 @@ func (r *transactionRepository) InputTransaction(payload entity.Transaction) err
 	return nil
 }
 
-func (r *transactionRepository) RetrieveAllTransaction(page, size int, orderDate, status, companyId string) ([]entity.Transaction, int, error) {
+func (r *transactionRepository) RetrieveAllTransaction(page, size int, companyId string) ([]entity.Transaction, int, error) {
 	var transactions []entity.Transaction
 	var total int64
 
-	err := r.db.Model(&entity.Transaction{}).Scopes(helper.FindBasedOnCompany(companyId), helper.Paginate(page, size)).Where("").Count(&total).Joins("DetailTransaction", r.db.Model(&entity.DetailTransaction{})).Joins("Invoice", r.db.Model(&entity.Invoice{})).Find(&transactions).Error
+	err := r.db.Model(&entity.Transaction{}).Scopes(helper.Paginate(page, size)).Preload("DetailTransactions").Preload("Invoices").Where("transactions.company_id = $1", companyId).Find(&transactions).Error
+	if err != nil {
+		return nil, 0, err
+	}
+
+	err = r.db.Model(&entity.Transaction{}).Count(&total).Error
+	if err != nil {
+		return nil, 0, err
+	}
 
 	return transactions, int(total), err
 }

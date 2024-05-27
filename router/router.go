@@ -2,6 +2,7 @@ package router
 
 import (
 	"finpro-fenlie/pkg/middleware"
+	brickRepository "finpro-fenlie/src/brick/brick_repository"
 	categoryDelivery "finpro-fenlie/src/category/category_delivery"
 	categoryRepository "finpro-fenlie/src/category/category_repository"
 	categoryUseCase "finpro-fenlie/src/category/category_use_case"
@@ -19,10 +20,13 @@ import (
 	userUseCase "finpro-fenlie/src/user/user_use_case"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-resty/resty/v2"
 	"gorm.io/gorm"
 )
 
 func InitRouter(v1Group *gin.RouterGroup, db *gorm.DB) {
+	client := resty.New()
+	brick := brickRepository.NewBrickRepository(client)
 
 	// Company Route
 	companyRepository := companyRepository.NewCompanyRepository(db)
@@ -47,7 +51,7 @@ func InitRouter(v1Group *gin.RouterGroup, db *gorm.DB) {
 		productDelivery.NewProductDelivery(v1Group, productUseCase)
 
 		// Transaction Route
-		transactionRepo := transactionRepository.NewTransactionRepository(db)
+		transactionRepo := transactionRepository.NewTransactionRepository(db, brick)
 		transactionUseCase := transactionUseCase.NewTransactionUsecase(transactionRepo)
 		transactionDelivery.NewTransactionDelivery(v1Group, transactionUseCase)
 	}

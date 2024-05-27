@@ -1,23 +1,18 @@
 package email
 
 import (
-	"finpro-fenlie/config"
 	"fmt"
 
-	"github.com/rs/zerolog/log"
 	"gopkg.in/gomail.v2"
 )
 
 func Send(to, subject, body string) error {
-	configData, err := config.InitEnv()
-	if err != nil {
-		log.Error().Err(err).Msg("failed to load config .env")
-	}
-
 	host := "smtp.gmail.com"
 	port := 587
 	sender := "andreekapradana@gmail.com"
-	password := configData.EmailSecret
+
+	// FIXME: cann't get email secret from env
+	password := "ovnr bbnh tvdb ssyp"
 
 	msg := gomail.NewMessage()
 	msg.SetHeader("From", fmt.Sprintf("%s <%s>", "Fenlie", sender))

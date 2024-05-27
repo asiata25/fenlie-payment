@@ -27,7 +27,7 @@ func NewTransactionDelivery(v1Group *gin.RouterGroup, transactionUC transaction.
 		// transactions.POST("/split-equal", handler.createTransactionEqual)
 		transactions.GET("", handler.getAllTransaction)
 		transactions.GET("/:id", handler.getTransactionByID)
-		transactions.PUT("/:id", handler.updateTransaction)
+		// transactions.PUT("/:id", handler.updateTransaction)
 
 	}
 }
@@ -61,25 +61,22 @@ func (t *TransactionDelivery) createTransaction(ctx *gin.Context) {
 }
 
 func (t *TransactionDelivery) getAllTransaction(ctx *gin.Context) {
-	// Get query
-	page, err := strconv.Atoi(ctx.Query("page"))
-	if err != nil {
-		json.NewResponseError(ctx, err.Error())
+	page, err := strconv.Atoi(ctx.DefaultQuery("page", "1"))
+	if err != nil || page < 0 {
+		json.NewResponseBadRequest(ctx, "fail to convert data", "page is not a positive number")
 		return
 	}
 
-	size, err := strconv.Atoi(ctx.Query("size"))
-	if err != nil {
-		json.NewResponseError(ctx, err.Error())
+	size, err := strconv.Atoi(ctx.DefaultQuery("size", "10"))
+	if err != nil || size < 0 {
+		json.NewResponseBadRequest(ctx, "fail to convert data", "size is not a positive number")
 		return
 	}
 
-	orderDate := ctx.Query("orderDate")
-	status := ctx.Query("status")
 	companyId := ctx.GetHeader("companyId")
 
 	// Get all transaction
-	res, total, err := t.transactionUC.GetAllTransaction(page, size, orderDate, status, companyId)
+	res, total, err := t.transactionUC.GetAllTransaction(page, size, companyId)
 	if err != nil {
 		json.NewResponseError(ctx, err.Error())
 		return
@@ -102,26 +99,26 @@ func (t *TransactionDelivery) getTransactionByID(ctx *gin.Context) {
 	json.NewResponseSuccess(ctx, res, "success")
 }
 
-func (t *TransactionDelivery) updateTransaction(ctx *gin.Context) {
-	id := ctx.Param("id")
-	companyId := ctx.GetHeader("companyId")
+// func (t *TransactionDelivery) updateTransaction(ctx *gin.Context) {
+// 	id := ctx.Param("id")
+// 	companyId := ctx.GetHeader("companyId")
 
-	// Bind request
-	var req map[string]interface{}
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		json.NewResponseError(ctx, err.Error())
-		return
-	}
+// 	// Bind request
+// 	var req map[string]interface{}
+// 	if err := ctx.ShouldBindJSON(&req); err != nil {
+// 		json.NewResponseError(ctx, err.Error())
+// 		return
+// 	}
 
-	// Update transaction
-	err := t.transactionUC.UpdateTransaction(id, companyId, req)
-	if err != nil {
-		json.NewResponseError(ctx, err.Error())
-		return
-	}
+// 	// Update transaction
+// 	err := t.transactionUC.UpdateTransaction(id, companyId, req)
+// 	if err != nil {
+// 		json.NewResponseError(ctx, err.Error())
+// 		return
+// 	}
 
-	json.NewResponseSuccess(ctx, nil, "success")
-}
+// 	json.NewResponseSuccess(ctx, nil, "success")
+// }
 
 // func (t *TransactionDelivery) createTransactionEach(ctx *gin.Context) {
 // 	// Bind request

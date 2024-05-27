@@ -59,18 +59,17 @@ func (c *productDelivery) GetAllProducts(ctx *gin.Context) {
 }
 
 func (c *productDelivery) CreateProduct(ctx *gin.Context) {
-
 	err := ctx.Request.ParseMultipartForm(10 << 20)
 	if err != nil {
 		log.Printf("Failed to parse form data: %v", err)
-		json.NewResponseBadRequest(ctx, nil, "failed to parse form data")
+		json.NewResponseError(ctx, "failed to parse form data")
 		return
 	}
 
 	file, _, err := ctx.Request.FormFile("image")
 	if err != nil {
 		log.Printf("Failed to get image: %v", err)
-		json.NewResponseBadRequest(ctx, nil, "failed to get image")
+		json.NewResponseError(ctx, "failed to get image")
 		return
 	}
 	defer file.Close()

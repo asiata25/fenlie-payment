@@ -50,6 +50,7 @@ func ToProductResponse(entity entity.Product) product.ProductResponse {
 		Description: entity.Description.String,
 		Status:      entity.Status,
 		Category:    entity.Category.Name,
+		Image:       entity.Image,
 	}
 }
 

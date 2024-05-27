@@ -26,5 +26,5 @@ type ProductResponse struct {
 	Description string `json:"description"`
 	Status      bool   `json:"status"`
 	Category    string `json:"category"`
-	Image       string `json:"image,omitempty"`
+	Image       string `json:"image"`
 }

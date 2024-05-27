@@ -25,6 +25,11 @@ func (repo *productRepository) GetAllProducts(page, pageSize int, name, companyI
 		return nil, 0, err
 	}
 
+	err := repo.db.Model(&entity.Product{}).Count(&totalItems).Error
+	if err != nil {
+		return nil, 0, err
+	}
+
 	return products, int(totalItems), nil
 }
 
