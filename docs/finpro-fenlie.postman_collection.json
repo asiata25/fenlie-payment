@@ -1,0 +1,1249 @@
+{
+	"info": {
+		"_postman_id": "c660965d-eb85-4feb-9289-5b1d5f804048",
+		"name": "finpro-fenlie",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "16263011"
+	},
+	"item": [
+		{
+			"name": "company",
+			"item": [
+				{
+					"name": "Create new company",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{client_secret}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{client_id}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"enigma resto\",\n    \"secret_key\": \"4}6@MsBk+T\",\n    \"user\": {\n        \"name\": \"Gulgowski Nawal\",\n        \"email\":\"admin@enresto.com\",\n        \"password\": \"Testtest123!\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/company",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"company"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get by ID",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{client_secret}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{client_id}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/company/e61335d5-1b1f-4aa1-9cda-3362bf04a0e2",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"company",
+								"e61335d5-1b1f-4aa1-9cda-3362bf04a0e2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete company",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{client_secret}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{client_id}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/company/e61335d5-1b1f-4aa1-9cda-3362bf04a0e2",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"company",
+								"e61335d5-1b1f-4aa1-9cda-3362bf04a0e2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{client_secret}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{client_id}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/company",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"company"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{client_secret}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{client_id}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"enigma resto\",\n    \"secret_key\": \"S}YYnbFS_!\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/company/e61335d5-1b1f-4aa1-9cda-3362bf04a0e2",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"company",
+								"e61335d5-1b1f-4aa1-9cda-3362bf04a0e2"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "user",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{company_key}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{company_id}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\":\"admin@enigmaresto.com\",\r\n    \"password\":\"Testtest123!\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/users/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Users",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{company_key}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{company_id}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "accessToken",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/users/?page=1&size=5&email=yanto",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								""
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "size",
+									"value": "5"
+								},
+								{
+									"key": "name",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "email",
+									"value": "yanto"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create User",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{company_key}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{company_id}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "accessToken",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\":\"Karyawan A\",\r\n    \"email\":\"karyawan_a@gmail.com\",\r\n    \"password\":\"paswor!\",\r\n    \"role\":\"EMPLOYEE\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/users",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get by ID",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{company_key}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{company_id}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "accessToken",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/users/22cff85f-f687-4cd5-a91e-4fe2ae5facdf",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"22cff85f-f687-4cd5-a91e-4fe2ae5facdf"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update User",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{company_key}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{company_id}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "accessToken",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\":\"bambang\",\r\n    \"role\": \"EMPLOYEE\",\r\n    \"password\": \"\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/users/6e5e8952-a93f-42c7-805b-cd91fe4d026e",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"6e5e8952-a93f-42c7-805b-cd91fe4d026e"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete User",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{company_key}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{company_id}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "accessToken",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/users/6e5e8952-a93f-42c7-805b-cd91fe4d026e",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"6e5e8952-a93f-42c7-805b-cd91fe4d026e"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "brick integration",
+			"item": [
+				{
+					"name": "Generate access token",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "f41b695e-6e67-4409-96f7-6b2e3b6e07b2",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "PRTFiWDFtPUyN9V0FsIoUAqHe0bpvN",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://sandbox.onebrick.io/v2/payments/auth/token",
+							"protocol": "https",
+							"host": [
+								"sandbox",
+								"onebrick",
+								"io"
+							],
+							"path": [
+								"v2",
+								"payments",
+								"auth",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Generate payment link",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "publicAccessToken",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "files",
+									"type": "file",
+									"src": [],
+									"disabled": true
+								},
+								{
+									"key": "referenceId",
+									"value": "testhalo",
+									"type": "text"
+								},
+								{
+									"key": "amount",
+									"value": "50000",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "something",
+									"type": "text"
+								},
+								{
+									"key": "endUserName",
+									"value": "iqitest2",
+									"type": "text"
+								},
+								{
+									"key": "endUserPhoneNumber",
+									"value": "+62834343434",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "endUserEmail",
+									"value": "iqi@onebrick.io",
+									"type": "text"
+								},
+								{
+									"key": "endUserAddress",
+									"value": "Jalan Tulodong bawah",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "pin",
+									"value": "1234",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "https://sandbox.onebrick.io/v2/payments/gs/payment-link",
+							"protocol": "https",
+							"host": [
+								"sandbox",
+								"onebrick",
+								"io"
+							],
+							"path": [
+								"v2",
+								"payments",
+								"gs",
+								"payment-link"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get payment link status",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "publicAccessToken",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"referenceId\": \"testhalo\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://sandbox.onebrick.io/v2/payments/gs/payment-link/status",
+							"protocol": "https",
+							"host": [
+								"sandbox",
+								"onebrick",
+								"io"
+							],
+							"path": [
+								"v2",
+								"payments",
+								"gs",
+								"payment-link",
+								"status"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "product",
+			"item": [
+				{
+					"name": "Get all",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8081/api/v1/products",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"v1",
+								"products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8081/api/v1/products/id",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"v1",
+								"products",
+								"id"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create new product",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{company_key}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{company_id}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "accessToken",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"ramen ichiraku\",\n    \"price\": 25000,\n    \"status\": true\n\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/products",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update product",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{company_key}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{company_id}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "accessToken",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"salmon\",\n    \"price\": 55000,\n    \"status\": 0,\n    \"description\": \"\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/products/0fa31364-65bd-4d42-a250-3e3759c6614f",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"products",
+								"0fa31364-65bd-4d42-a250-3e3759c6614f"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{company_key}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{company_id}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "accessToken",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/products/0fa31364-65bd-4d42-a250-3e3759c6614f",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"products",
+								"0fa31364-65bd-4d42-a250-3e3759c6614f"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "category",
+			"item": [
+				{
+					"name": "Get all",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{company_key}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{company_id}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "accessToken",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/category?page=1&size=5&name=ramen",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"category"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "size",
+									"value": "5"
+								},
+								{
+									"key": "name",
+									"value": "ramen"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get by ID",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{company_key}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{company_id}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "accessToken",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/category/1f2cdcdf-3e3e-4fac-ba93-2a5e4acb81b0",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"category",
+								"1f2cdcdf-3e3e-4fac-ba93-2a5e4acb81b0"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create category",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{company_key}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{company_id}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "accessToken",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\":\"ramen\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/category",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"category"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{company_key}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{company_id}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "accessToken",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\":\"sushi\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/category/1f2cdcdf-3e3e-4fac-ba93-2a5e4acb81b0",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"category",
+								"1f2cdcdf-3e3e-4fac-ba93-2a5e4acb81b0"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete category",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{company_key}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{company_id}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "accessToken",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/category/1f2cdcdf-3e3e-4fac-ba93-2a5e4acb81b0",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"category",
+								"1f2cdcdf-3e3e-4fac-ba93-2a5e4acb81b0"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "transaction",
+			"item": [
+				{
+					"name": "Create Transaction",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{company_key}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{company_id}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "accessToken",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"total\": 220000,\r\n    \"detail_transactions\": [\r\n        {\r\n            \"product_id\": \"164ecf2b-e4b3-44e6-9ae1-ff1f8e7efb2b\",\r\n            \"quantity\": 4,\r\n            \"amount\": 100000\r\n        },\r\n        {\r\n            \"product_id\": \"164ecf2b-e4b3-44e6-9ae1-123\",\r\n            \"quantity\": 2,\r\n            \"amount\": 120000\r\n        }\r\n    ],\r\n    \"invoices\": [\r\n        {\r\n            \"email_customer\": \"Telly_Fisher@example.net\",\r\n            \"amount\": 11000\r\n        },\r\n        {\r\n            \"email_customer\": \".com\",\r\n            \"amount\": 11000\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/transactions",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"transactions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Transaction Split Each",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTYzNjE5MzIsImlzcyI6ImZpbnByby1mZW5saWUiLCJ1c2VybmFtZSI6Imthcnlhd2FuX2FAZ21haWwuY29tIiwidXNlcl9pZCI6IjhjMGFjMDBmLWNkYmMtNDE5MC1hMjc4LTdiZGNlYWMyYjk0ZCIsImNvbXBhbnlfaWQiOiIxM2Q3ZWI4OC1mNDBjLTRmMjktYjFmMS1mZDc5M2U3YzIxZDciLCJyb2xlIjoiRU1QTE9ZRUUifQ.Sh4kGgASqUD59ISsBcB4evT5T3gojv31vNrf7dScz8I",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"customer\":\"Debby, debby@gmail.com, 083840995412\",  \r\n    \"request_product\": [\r\n        {\r\n            \"product_id\":\"4a2181f7-81c5-45fa-953d-43efc5809e11\",\r\n            \"quantity\":1,\r\n            \"email\":\"debby@gmail.com\"\r\n        },\r\n        {\r\n            \"product_id\":\"4a2181f7-81c5-45fa-953d-43efc5809e11\",\r\n            \"quantity\":1,\r\n            \"email\":\"khoir@gmail.com\"\r\n        },\r\n        {\r\n            \"product_id\":\"6692d116-1b82-44af-9081-fcc9c916a429\",\r\n            \"quantity\":1,\r\n            \"email\":\"andre@gmail.com\"\r\n        },\r\n        {\r\n            \"product_id\":\"d9ee2463-40cd-4f34-9d67-2852c0e47fd3\",\r\n            \"quantity\":1,\r\n            \"email\":\"mrivaldi@gmail.com\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/fenlie/api/v1/transactions/split-each",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"fenlie",
+								"api",
+								"v1",
+								"transactions",
+								"split-each"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Transaction Split Equal",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTYzNzE5MjYsImlzcyI6ImZpbnByby1mZW5saWUiLCJ1c2VybmFtZSI6Imthcnlhd2FuX2FAZ21haWwuY29tIiwidXNlcl9pZCI6IjhjMGFjMDBmLWNkYmMtNDE5MC1hMjc4LTdiZGNlYWMyYjk0ZCIsImNvbXBhbnlfaWQiOiIxM2Q3ZWI4OC1mNDBjLTRmMjktYjFmMS1mZDc5M2U3YzIxZDciLCJyb2xlIjoiRU1QTE9ZRUUifQ.A0Wsdx_qtFGznsRNhSjPOiTgPkyWbGBbOS9S6dXY6ME",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"customer\":\"Debby, debby@gmail.com, 083840995412\",\r\n    \"request_product\": [\r\n        {\r\n            \"product_id\":\"4a2181f7-81c5-45fa-953d-43efc5809e11\",\r\n            \"quantity\":1\r\n        },\r\n        {\r\n            \"product_id\":\"4a2181f7-81c5-45fa-953d-43efc5809e11\",\r\n            \"quantity\":1\r\n        },\r\n        {\r\n            \"product_id\":\"6692d116-1b82-44af-9081-fcc9c916a429\",\r\n            \"quantity\":1\r\n        },\r\n        {\r\n            \"product_id\":\"d9ee2463-40cd-4f34-9d67-2852c0e47fd3\",\r\n            \"quantity\":1\r\n        }\r\n    ],\r\n    \"email\":\"debby@gmail.com, khoir@gmail.com, andre@gmail.com, mrivaldi@gmail.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/fenlie/api/v1/transactions/split-equal",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"fenlie",
+								"api",
+								"v1",
+								"transactions",
+								"split-equal"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Transaction",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTYzNzg5NTEsImlzcyI6ImZpbnByby1mZW5saWUiLCJ1c2VybmFtZSI6Imthcnlhd2FuX2FAZ21haWwuY29tIiwidXNlcl9pZCI6IjhjMGFjMDBmLWNkYmMtNDE5MC1hMjc4LTdiZGNlYWMyYjk0ZCIsImNvbXBhbnlfaWQiOiIxM2Q3ZWI4OC1mNDBjLTRmMjktYjFmMS1mZDc5M2U3YzIxZDciLCJyb2xlIjoiRU1QTE9ZRUUifQ.HpHNrSOEL-5WNhu_vcOJL7WwsNYXP83fHqu9FGgl8Yk",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/fenlie/api/v1/transactions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"fenlie",
+								"api",
+								"v1",
+								"transactions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Transaction By ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTY0MzU0NzAsImlzcyI6ImZpbnByby1mZW5saWUiLCJ1c2VybmFtZSI6Imthcnlhd2FuX2FAZ21haWwuY29tIiwidXNlcl9pZCI6IjhjMGFjMDBmLWNkYmMtNDE5MC1hMjc4LTdiZGNlYWMyYjk0ZCIsImNvbXBhbnlfaWQiOiIxM2Q3ZWI4OC1mNDBjLTRmMjktYjFmMS1mZDc5M2U3YzIxZDciLCJyb2xlIjoiRU1QTE9ZRUUifQ.6nk-NPKwoRl_GvbYFWpoNqPYSHCDJJHWknMM6XGMy6I",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/fenlie/api/v1/transactions/018612d7-e477-4ddd-b1e3-ed97afa4081f",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"fenlie",
+								"api",
+								"v1",
+								"transactions",
+								"018612d7-e477-4ddd-b1e3-ed97afa4081f"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
